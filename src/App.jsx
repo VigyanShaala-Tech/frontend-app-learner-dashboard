@@ -41,7 +41,8 @@ export const App = () => {
   const hasNetworkFailure = isFailed.initialize || isFailed.refreshList;
   const { supportEmail } = reduxHooks.usePlatformSettingsData();
   const loadData = reduxHooks.useLoadData();
-  const [hasProfileCompleted, setHasProfileCompleted] = useState(false);
+  const [hasProfileCompleted, setHasProfileCompleted] = useState(true);
+  const [canAccessPage, setCanaccessPage] = useState(true);
   React.useEffect(() => {
     if (authenticatedUser?.administrator || getConfig().NODE_ENV === 'development') {
       window.loadEmptyData = () => {
@@ -85,6 +86,7 @@ export const App = () => {
         } else {
           setHasProfileCompleted(false);
         }
+        setCanaccessPage(data.hidden);
 
       } catch (err) {
         console.error('Failed to load profile progress:', err);
@@ -102,7 +104,7 @@ export const App = () => {
       </Helmet>
       <div>
         <AppWrapper>
-          {!hasProfileCompleted && <RestrictionPage />}
+          {!hasProfileCompleted && !canAccessPage && <RestrictionPage />}
           <LearnerDashboardHeader />
           <main id="main">
             {hasNetworkFailure
