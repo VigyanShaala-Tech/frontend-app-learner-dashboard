@@ -3,9 +3,7 @@ import { AppContext } from '@edx/frontend-platform/react';
 import { useIntl } from '@edx/frontend-platform/i18n';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
-  faBookOpen,
   faCheckCircle,
-  faChartLine,
   faAward,
   faTrophy,
 } from '@fortawesome/free-solid-svg-icons';
@@ -33,73 +31,22 @@ const Achievements = () => {
   useEffect(() => {
     const fetchSummaryCards = async () => {
       try {
-        const res = await httpClient.get(`${baseUrl}/api/v1/dashboard/summary-cards/`);
+        const res = await httpClient.get(`${baseUrl}/api/v1/achievements/all/`);
 
         if (res.status === 200 && res.data) {
-          const mappedCards = res.data.map((item) => ({
+          const mappedCards = res.data.stats.map((item) => ({
             ...item,
             icon:
-              item.icon === 'faBookOpen'
-                ? faBookOpen
-                : item.icon === 'faCheckCircle'
-                ? faCheckCircle
-                : item.icon === 'faChartLine'
-                ? faChartLine
-                : faAward,
+              item.icon === 'faAward'
+                ? faAward
+                : item.icon === 'faTrophy'
+                ? faTrophy
+                : faCheckCircle,
           }));
 
           setSummaryCards(mappedCards);
-        }
-      } catch (err) {
-        console.error('Failed to fetch summary cards:', err);
-        setSummaryCards([]);
-      }
-    };
-
-
-    const fetchEarnedBadges = async () => {
-      try {
-        const res = await httpClient.get(`${baseUrl}/api/v1/dashboard/summary-cards/`);
-
-        if (res.status === 200 && res.data) {
-          const mappedCards = res.data.map((item) => ({
-            ...item,
-            icon:
-              item.icon === 'faBookOpen'
-                ? faBookOpen
-                : item.icon === 'faCheckCircle'
-                ? faCheckCircle
-                : item.icon === 'faChartLine'
-                ? faChartLine
-                : faAward,
-          }));
-
-          setEarnedBadges(mappedCards);
-        }
-      } catch (err) {
-        console.error('Failed to fetch summary cards:', err);
-        setSummaryCards([]);
-      }
-    };
-
-    const fetchProgressBadges = async () => {
-      try {
-        const res = await httpClient.get(`${baseUrl}/api/v1/dashboard/summary-cards/`);
-
-        if (res.status === 200 && res.data) {
-          const mappedCards = res.data.map((item) => ({
-            ...item,
-            icon:
-              item.icon === 'faBookOpen'
-                ? faBookOpen
-                : item.icon === 'faCheckCircle'
-                ? faCheckCircle
-                : item.icon === 'faChartLine'
-                ? faChartLine
-                : faAward,
-          }));
-
-          setProgressBadges(mappedCards);
+          setEarnedBadges(res.data.earned_badges)
+          setProgressBadges(res.data.badges_in_progress)
         }
       } catch (err) {
         console.error('Failed to fetch summary cards:', err);
@@ -108,8 +55,6 @@ const Achievements = () => {
     };
 
     fetchSummaryCards();
-    fetchEarnedBadges();
-    fetchProgressBadges();
   }, [baseUrl]);
 
   return (
@@ -155,13 +100,13 @@ const Achievements = () => {
                 className="col-12 col-sm-6 col-lg-4 mb-4"
               >
                 <div className="card p-4 d-flex align-items-center achievement-stat">
-                  <img src={data.img || AltBadgeImage } alt={data.label} className="mb-3 badge-img" 
+                  <img src={data.icon_url || AltBadgeImage } alt={data.title} className="mb-3 badge-img" 
                     onError={(e) => {
                     e.currentTarget.onerror = null;
                     e.currentTarget.src = PlaceholderImage;}}
                   />
-                  <h3 className="stat-title mb-1">{data.number}</h3>
-                  <p className="text-muted state-name">{data.label}</p>
+                  <h3 className="stat-title mb-1">{data.title}</h3>
+                  <p className="text-muted state-name">{data.description}</p>
                 </div>
               </div>
             ))}
@@ -181,13 +126,13 @@ const Achievements = () => {
                 className="col-12 col-sm-6 col-lg-4 mb-4"
               >
                 <div className="card p-4 d-flex align-items-center achievement-stat inactive">
-                  <img src={data.img || AltBadgeImage } alt={data.label} className="mb-3 badge-img" 
+                  <img src={data.icon_url || AltBadgeImage } alt={data.title} className="mb-3 badge-img" 
                     onError={(e) => {
                     e.currentTarget.onerror = null;
                     e.currentTarget.src = PlaceholderImage;}}
                   />
-                  <h3 className="stat-title mb-1">{data.number}</h3>
-                  <p className="text-muted state-name">{data.label}</p>
+                  <h3 className="stat-title mb-1">{data.title}</h3>
+                  <p className="text-muted state-name">{data.description}</p>
                 </div>
               </div>
             ))}
