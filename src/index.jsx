@@ -27,7 +27,9 @@ import { configuration } from './config';
 import messages from './i18n';
 
 import App from './App';
+import CustomApp from 'CustomApp';
 import NoticesWrapper from './components/NoticesWrapper';
+import {PluginSlot} from "@openedx/frontend-plugin-framework";
 
 subscribe(APP_READY, () => {
   const root = createRoot(document.getElementById('root'));
@@ -37,7 +39,15 @@ subscribe(APP_READY, () => {
       <AppProvider store={store}>
         <NoticesWrapper>
           <Routes>
-            <Route path="/" element={<PageWrap><App /></PageWrap>} />
+            <Route path="/" element={
+              <PageWrap>
+                <PluginSlot
+                  id = "learner_dashboard_page_plugin_slot"
+                >
+                  <App />
+                </PluginSlot>
+              </PageWrap>} />
+            <Route path="/achievements" element={<PageWrap><CustomApp variant="achievements" /></PageWrap>} />
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
         </NoticesWrapper>
