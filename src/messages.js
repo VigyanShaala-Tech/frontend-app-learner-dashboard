@@ -16,6 +16,11 @@ const messages = defineMessages({
     description: 'Page title: Learner Home',
     defaultMessage: 'Learner Home',
   },
+  achievementsPageTitle: {
+    id: 'achievements.page.title',
+    defaultMessage: 'My Achievements',
+    description: 'Page title for achievements route',
+  },
 });
 
 export default messages;
