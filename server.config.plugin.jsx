@@ -3,7 +3,7 @@ from tutormfe.hooks import PLUGIN_SLOTS
 
 hooks.Filters.ENV_PATCHES.add_item(
     (
-        "mfe-env-config-runtime-definitions-profile",
+        "mfe-env-config-runtime-definitions-learner-dashboard",
         """
         // This file contains configuration for plugins and environment variables.
 const { PLUGIN_OPERATIONS, DIRECT_PLUGIN } = await import('@openedx/frontend-plugin-framework');
