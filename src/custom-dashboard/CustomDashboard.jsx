@@ -279,6 +279,10 @@ const Dashboard = () => {
     const progressUrl = `${learningBaseUrl}/course/${course.id}/progress`;
     window.location.href = progressUrl;
   }
+  const handleLearning = (course) => {
+    const progressUrl = `${learningBaseUrl}/course/${course.id}`;
+    window.location.href = progressUrl;
+  }
   const handleViewCourse = (course) => {
     const viewCourseUrl = `${publicBaseUrl}courses/${course.id}`;
     window.location.href = viewCourseUrl;
@@ -354,7 +358,7 @@ const Dashboard = () => {
           <div className="row">
             {inProgressCourses.map((course) => (
               <div key={course.id} className="col-12 col-sm-6 col-lg-4 mb-4">
-                <CourseCard course={course} progresscard={true} buttonName={formatMessage(messages['dashboard.viewProgress'])} handleButtonClick={() => handleViewProgressButton(course)}/>
+                <CourseCard course={course} progresscard={true} buttonName={formatMessage(messages['dashboard.viewProgress'])} handleButtonClick={() => handleViewProgressButton(course)} handleCardClick={() => handleLearning(course)}/>
               </div>
             ))}
           </div>
@@ -446,7 +450,7 @@ const Dashboard = () => {
           <div className="row">
             {completedCourses.map((course) => (
               <div key={course.id} className="col-12 col-sm-6 col-lg-4 mb-4">
-                <CourseCard course={course} progresscard={true} buttonName={formatMessage(messages['dashboard.viewCertificate'])} handleButtonClick={() => handleViewCertificate(course)}/>
+                <CourseCard course={course} progresscard={true} buttonName={formatMessage(messages['dashboard.viewCertificate'])} handleButtonClick={() => handleViewCertificate(course)} handleCardClick={() => handleLearning(course)}/>
               </div>
             ))}
           </div>
@@ -471,7 +475,7 @@ const Dashboard = () => {
       {/* Banner / Hero */}
       <div className="container">
         <h1 className="dashboard-title">
-          {formatMessage(messages['dashboard.welcome'], { name: authenticatedUser.username })}
+          {formatMessage(messages['dashboard.welcome'], { name: authenticatedUser.name })}
         </h1>
       </div>
 

@@ -13,9 +13,9 @@ import { Link } from 'react-router-dom';
 import './CourseCard.scss';
 import PlaceholderImage from '../../../assets/image/placeholder-image.jpeg';
 
-const CourseCard = ({ course, progresscard = false , buttonName = "Button", handleButtonClick = null, handleRemove= null}) => {
+const CourseCard = ({ course, progresscard = false , buttonName = "Button", handleButtonClick = null, handleRemove= null, handleCardClick = null}) => {
   return (
-    <div className="course-card grid-mode border rounded">
+    <div className="course-card grid-mode border rounded" onClick={handleCardClick} style={{ cursor: handleCardClick ? 'pointer' : 'default' }}>
       <div className="course-image-wrapper">
         <img
           src={course.image || PlaceholderImage} 
@@ -94,7 +94,10 @@ const CourseCard = ({ course, progresscard = false , buttonName = "Button", hand
             }
           </div>
         )}
-        <Button block variant="primary" onClick={handleButtonClick}>
+        <Button block variant="primary" className='text-white' onClick={(e) => {
+          e.stopPropagation();
+          handleButtonClick(e);
+        }}>
           {buttonName}
         </Button>
       </div>
