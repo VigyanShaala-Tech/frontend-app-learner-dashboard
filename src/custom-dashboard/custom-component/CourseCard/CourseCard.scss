@@ -48,9 +48,8 @@
     font-size: 1.125rem;
     font-weight: 600;
     line-height: 1.75rem;
-    display: -webkit-box;
-    -webkit-box-orient: vertical;
-
+    display: block;
+    white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
   }
