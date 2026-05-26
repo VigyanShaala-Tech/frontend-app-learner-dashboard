@@ -96,15 +96,20 @@ const messages = defineMessages({
         defaultMessage: 'No wishlisted courses',
         description: 'Message for empty wishlist',
     },
+    'dashboard.noInProgress': {
+        id: 'dashboard.noInProgress',
+        defaultMessage: 'No courses in progress',
+        description: 'Message when the in-progress tab has no courses',
+    },
+    'dashboard.noCompleted': {
+        id: 'dashboard.noCompleted',
+        defaultMessage: 'No completed courses yet',
+        description: 'Message when the completed tab has no courses',
+    },
     'dashboard.error.fetch': {
         id: 'dashboard.error.fetch',
         defaultMessage: 'Failed to load courses',
         description: 'Error message for fetch failures',
-    },
-    'dashboard.noResults.title': {
-        id: 'dashboard.noResults.title',
-        defaultMessage: 'No results found',
-        description: 'Title for no results state',
     },
 });
 

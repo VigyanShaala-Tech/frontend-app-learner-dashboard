@@ -1,0 +1,23 @@
+@import 'variables';
+
+// Shared borders for custom dashboard and achievements pages.
+// Buttons are not targeted so Paragon/Bootstrap button styles stay unchanged.
+
+.dashboard-page,
+.achievement-page {
+  .card {
+    border-color: $custom-border-color !important;
+  }
+
+  .course-card.border {
+    border-color: $custom-border-color !important;
+  }
+
+  .no-results {
+    border: 1px solid $custom-border-color;
+  }
+
+  .card .border-bottom {
+    border-bottom-color: $custom-border-color !important;
+  }
+}
