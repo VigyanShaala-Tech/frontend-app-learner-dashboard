@@ -1,6 +1,5 @@
 import React from 'react';
 import { Helmet } from 'react-helmet';
-import { useState, useEffect } from 'react';
 import { useIntl } from '@edx/frontend-platform/i18n';
 import { logError } from '@edx/frontend-platform/logging';
 import { initializeHotjar } from '@edx/frontend-enterprise-hotjar';
@@ -28,9 +27,6 @@ import LearnerDashboardHeader from 'containers/LearnerDashboardHeader';
 import { getConfig } from '@edx/frontend-platform';
 import messages from './messages';
 import './App.scss';
-import { getAuthenticatedHttpClient } from '@edx/frontend-platform/auth';
-import RestrictionPage from 'components/restriction-page/RestrictionPage';
-
 export const App = () => {
   const { authenticatedUser } = React.useContext(AppContext);
   const { formatMessage } = useIntl();
@@ -41,8 +37,6 @@ export const App = () => {
   const hasNetworkFailure = isFailed.initialize || isFailed.refreshList;
   const { supportEmail } = reduxHooks.usePlatformSettingsData();
   const loadData = reduxHooks.useLoadData();
-  const [hasProfileCompleted, setHasProfileCompleted] = useState(true);
-  const [canAccessPage, setCanaccessPage] = useState(true);
   React.useEffect(() => {
     if (authenticatedUser?.administrator || getConfig().NODE_ENV === 'development') {
       window.loadEmptyData = () => {
@@ -74,28 +68,6 @@ export const App = () => {
       }
     }
   }, [authenticatedUser, loadData]);
-  useEffect(() => {
-    const { LMS_BASE_URL } = getConfig();
-
-    const loadProfileCompletion = async () => {
-      try {
-        const client = getAuthenticatedHttpClient();
-        const { data } = await client.get(`${LMS_BASE_URL}/profile/progress/?role=student`);
-        if (data?.percentage === 100) {
-          setHasProfileCompleted(true);
-        } else {
-          setHasProfileCompleted(false);
-        }
-        setCanaccessPage(data.hidden);
-
-      } catch (err) {
-        console.error('Failed to load profile progress:', err);
-        setHasProfileCompleted(false);
-      }
-    };
-
-    loadProfileCompletion();
-  }, []);
   return (
     <>
       <Helmet>
@@ -104,7 +76,6 @@ export const App = () => {
       </Helmet>
       <div>
         <AppWrapper>
-          {!hasProfileCompleted && !canAccessPage && <RestrictionPage />}
           <LearnerDashboardHeader />
           <main id="main">
             {hasNetworkFailure

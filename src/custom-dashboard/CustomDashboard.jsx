@@ -347,17 +347,17 @@ const Dashboard = () => {
       if (inProgressCourses.length === 0) {
         return (
           <div className="text-center py-8 no-results rounded">
-            <h4 className="text-muted mb-4">
-              {formatMessage(messages['dashboard.noResults.title'])}
-            </h4>
+            <p className="text-muted mb-0">
+              {formatMessage(messages['dashboard.noInProgress'])}
+            </p>
           </div>
         );
       }
       return (
         <>
-          <div className="row">
+          <div className="row my-courses-grid">
             {inProgressCourses.map((course) => (
-              <div key={course.id} className="col-12 col-sm-6 col-lg-4 mb-4">
+              <div key={course.id} className="col-12 col-sm-6 col-lg-3 mb-4">
                 <CourseCard course={course} progresscard={true} buttonName={formatMessage(messages['dashboard.viewProgress'])} handleButtonClick={() => handleViewProgressButton(course)} handleCardClick={() => handleLearning(course)}/>
               </div>
             ))}
@@ -398,9 +398,9 @@ const Dashboard = () => {
       }
       return (
         <>
-          <div className="row">
+          <div className="row my-courses-grid">
             {wishlistCourses.map((course) => (
-              <div key={course.id} className="col-12 col-sm-6 col-lg-4 mb-4">
+              <div key={course.id} className="col-12 col-sm-6 col-lg-3 mb-4">
                 <CourseCard
                   course={course}
                   buttonName={formatMessage(messages['dashboard.viewCourse'])}
@@ -439,17 +439,17 @@ const Dashboard = () => {
       if (completedCourses.length === 0) {
         return (
           <div className="text-center py-8 no-results rounded">
-            <h4 className="text-muted mb-4">
-              {formatMessage(messages['dashboard.noResults.title'])}
-            </h4>
+            <p className="text-muted mb-0">
+              {formatMessage(messages['dashboard.noCompleted'])}
+            </p>
           </div>
         );
       }
       return (
         <>
-          <div className="row">
+          <div className="row my-courses-grid">
             {completedCourses.map((course) => (
-              <div key={course.id} className="col-12 col-sm-6 col-lg-4 mb-4">
+              <div key={course.id} className="col-12 col-sm-6 col-lg-3 mb-4">
                 <CourseCard course={course} progresscard={true} buttonName={formatMessage(messages['dashboard.viewCertificate'])} handleButtonClick={() => handleViewCertificate(course)} handleCardClick={() => handleLearning(course)}/>
               </div>
             ))}
