@@ -19,6 +19,11 @@ const messages = defineMessages({
     id: 'achievement.inProgress',
     defaultMessage: 'Badges in Progress',
   },
+  'achievement.error.fetch': {
+    id: 'achievement.error.fetch',
+    defaultMessage: 'Failed to load achievements',
+    description: 'Error message when achievements API call fails',
+  },
 });
 
 export default messages;

@@ -2,6 +2,9 @@
   background: white;
   overflow: hidden;
   transition: all 0.32s cubic-bezier(0.4, 0, 0.2, 1);
+  height: 100%;
+  display: flex;
+  flex-direction: column;
 
   &:hover {
     transform: translateY(-6px);
@@ -42,7 +45,9 @@
     }
   }
   .course-card-content-container-grid{
-    height: 280px;
+    min-height: 170px;
+    display: flex;
+    flex-direction: column;
   }
   .course-title-grid {
     font-size: 1.125rem;
@@ -59,9 +64,14 @@
     overflow: hidden;
     text-overflow: ellipsis;
   }
+
+  .btn {
+    margin-top: auto;
+  }
 }
 .grid-mode {
   .course-image-wrapper {
     height: 180px;
+    flex-shrink: 0;
   }
 }
