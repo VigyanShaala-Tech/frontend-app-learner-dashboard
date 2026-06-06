@@ -10,12 +10,16 @@ import {
   faAward,
   faHeart,
   faChevronRight,
+  faBell,
 } from '@fortawesome/free-solid-svg-icons';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { getConfig } from '@edx/frontend-platform';
 import { getAuthenticatedHttpClient } from '@edx/frontend-platform/auth';
 
 import messages from './custommessages';
+import { fetchRecommendedCourses } from '../custom-api/recommendedCoursesApi';
+import { fetchAchievementsAll } from '../custom-api/achievementsApi';
+import { fetchNotifications, checkoutNotifications } from '../custom-api/notificationsApi';
 
 import './CustomDashboard.scss';
 import CourseCard from './custom-component/CourseCard/CourseCard';
@@ -24,6 +28,7 @@ import AltBadgeImage from '../assets/image/badgealt.jpeg';
 const Dashboard = () => {
   const { formatMessage } = useIntl();
   const { authenticatedUser } = useContext(AppContext);
+  const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('in-progress');
   // const [unenrollCourse, setUnenrollCourse] = useState(null);
 
@@ -51,6 +56,12 @@ const Dashboard = () => {
   const [completedTotalPages, setCompletedTotalPages] = useState(1);
   const [completedLoading, setCompletedLoading] = useState(false);
   const [completedError, setCompletedError] = useState(null);
+  const [achievementsRedirectLoading, setAchievementsRedirectLoading] = useState(false);
+  const [notificationState, setNotificationState] = useState({
+    haveNewNotification: false,
+    notifications: [],
+  });
+  const [showNotifications, setShowNotifications] = useState(false);
 
   const { config } = useContext(AppContext);
   const learningBaseUrl = config.LEARNING_BASE_URL;
@@ -59,9 +70,55 @@ const Dashboard = () => {
   // Refs
   const myCoursesRef = useRef(null);
   const achievementsRef = useRef(null);
+  const notificationRef = useRef(null);
 
   const baseUrl = getConfig().LMS_BASE_URL;
   const httpClient = getAuthenticatedHttpClient();
+
+  const loadNotifications = useCallback(async () => {
+    try {
+      const data = await fetchNotifications({ httpClient, baseUrl });
+      setNotificationState(data);
+    } catch (err) {
+      console.error('Failed to fetch notifications:', err);
+      setNotificationState({
+        haveNewNotification: false,
+        notifications: [],
+      });
+    }
+  }, [baseUrl]);
+
+  useEffect(() => {
+    loadNotifications();
+  }, [loadNotifications]);
+
+  const handleNotificationClick = async () => {
+    setShowNotifications((prev) => !prev);
+
+    if (!notificationState.haveNewNotification) {
+      return;
+    }
+
+    try {
+      const success = await checkoutNotifications({ httpClient, baseUrl });
+      if (success) {
+        await loadNotifications();
+      }
+    } catch (err) {
+      console.error('Failed to checkout notifications:', err);
+    }
+  };
+
+  useEffect(() => {
+    const handleOutsideClick = (event) => {
+      if (notificationRef.current && !notificationRef.current.contains(event.target)) {
+        setShowNotifications(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleOutsideClick);
+    return () => document.removeEventListener('mousedown', handleOutsideClick);
+  }, []);
 
   // Fetch summary cards
   useEffect(() => {
@@ -126,18 +183,16 @@ const Dashboard = () => {
 
   // Fetch recommended
   useEffect(() => {
-    const fetchRecommended = async () => {
+    const loadRecommended = async () => {
       try {
-        const res = await httpClient.get(`${baseUrl}/api/v1/dashboard/recommended-courses/`);
-        if (res.status === 200 && res.data) {
-          setRecommendedCourses(res.data);
-        }
+        const data = await fetchRecommendedCourses({ httpClient, baseUrl });
+        setRecommendedCourses(data);
       } catch (err) {
         console.error('Failed to fetch recommended courses:', err);
         setRecommendedCourses([]);
       }
     };
-    fetchRecommended();
+    loadRecommended();
   }, [baseUrl]);
 
   // Fetch in-progress courses
@@ -332,6 +387,18 @@ const Dashboard = () => {
     setWishlistCourses(prev => prev.filter(c => c.id !== id));
   };
 
+  const handleViewAllAchievements = async () => {
+    try {
+      setAchievementsRedirectLoading(true);
+      const data = await fetchAchievementsAll({ httpClient, baseUrl });
+      navigate('/achievements', { state: { achievementsData: data } });
+    } catch (err) {
+      console.error('Failed to prefetch achievements:', err);
+    } finally {
+      setAchievementsRedirectLoading(false);
+    }
+  };
+
   const renderTabContent = (tabKey) => {
     if (tabKey === 'in-progress') {
       if (inProgressLoading) {
@@ -473,10 +540,37 @@ const Dashboard = () => {
   return (
     <div className="dashboard-page mt-3">
       {/* Banner / Hero */}
-      <div className="container">
-        <h1 className="dashboard-title">
+      <div className="container dashboard-hero-header">
+        <h1 className="dashboard-title mb-0">
           {formatMessage(messages['dashboard.welcome'], { name: authenticatedUser.name })}
         </h1>
+        <div className="notification-wrapper" ref={notificationRef}>
+          <button
+            type="button"
+            className="notification-trigger"
+            aria-label="Notifications"
+            onClick={handleNotificationClick}
+          >
+            <FontAwesomeIcon icon={faBell} />
+            {notificationState.haveNewNotification && (
+              <span className="notification-dot" />
+            )}
+          </button>
+          {showNotifications && (
+            <div className="notification-panel">
+              {notificationState.notifications.length > 0 ? (
+                notificationState.notifications.map((item) => (
+                  <div key={item.id} className="notification-item">
+                    <h6>{item.title}</h6>
+                    <p>{item.description}</p>
+                  </div>
+                ))
+              ) : (
+                <div className="notification-empty">No notifications</div>
+              )}
+            </div>
+          )}
+        </div>
       </div>
 
       {/* Quick Stats */}
@@ -543,7 +637,7 @@ const Dashboard = () => {
 
       {/* Achievements */}
       {achievements.length > 0 && (
-        <div className="container" ref={achievementsRef}>
+        <div className="container dashboard-achievements-section" ref={achievementsRef}>
           <h2 className="mb-4 dashboard-section-title">
             {formatMessage(messages['dashboard.achievements'])}
           </h2>
@@ -563,11 +657,18 @@ const Dashboard = () => {
               ))}
             </div>
             <div className="text-right">
-              <Link to={"/achievements"}>
-                <Button variant="link" className="text-primary">
-                  {formatMessage(messages['dashboard.viewAll'])} <FontAwesomeIcon icon={faChevronRight} className="ml-2" />
-                </Button>
-              </Link>
+              <Button
+                variant="link"
+                className="text-primary"
+                onClick={handleViewAllAchievements}
+                disabled={achievementsRedirectLoading}
+              >
+                {achievementsRedirectLoading ? (
+                  <Spinner animation="border" size="sm" className="mr-2" />
+                ) : null}
+                {formatMessage(messages['dashboard.viewAll'])}
+                <FontAwesomeIcon icon={faChevronRight} className="ml-2" />
+              </Button>
             </div>
           </div>
         </div>

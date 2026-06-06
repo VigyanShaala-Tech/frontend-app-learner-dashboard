@@ -10,6 +10,82 @@
   margin-bottom: 2.5rem;
 }
 
+.dashboard-hero-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 2.5rem;
+}
+
+.notification-wrapper {
+  position: relative;
+}
+
+.notification-trigger {
+  position: relative;
+  border: none;
+  background: #fff;
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 999px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.notification-dot {
+  position: absolute;
+  top: 0.35rem;
+  right: 0.35rem;
+  width: 0.5rem;
+  height: 0.5rem;
+  border-radius: 999px;
+  background: #ef4444;
+}
+
+.notification-panel {
+  position: absolute;
+  top: calc(100% + 0.5rem);
+  right: 0;
+  width: 320px;
+  max-width: calc(100vw - 2rem);
+  background: #fff;
+  border: 1px solid #e2e8f0;
+  border-radius: 0.75rem;
+  box-shadow: 0 12px 28px rgba(15, 23, 42, 0.12);
+  z-index: 1050;
+  overflow: hidden;
+}
+
+.notification-item {
+  padding: 0.85rem 1rem;
+  border-bottom: 1px solid #e2e8f0;
+
+  &:last-child {
+    border-bottom: none;
+  }
+
+  h6 {
+    margin: 0 0 0.3rem;
+    font-size: 0.95rem;
+  }
+
+  p {
+    margin: 0;
+    color: #64748b;
+    font-size: 0.85rem;
+    line-height: 1.35;
+  }
+}
+
+.notification-empty {
+  padding: 1rem;
+  color: #64748b;
+  font-size: 0.9rem;
+}
+
 .dashboard-section-title {
   font-size: 1.5rem;
   @media (min-width: 768px) {
@@ -102,6 +178,10 @@
 
 /* Mobile priorities */
 @media (max-width: 576px) {
+  .dashboard-hero-header {
+    align-items: flex-start;
+  }
+
   .dashboard-title {
     font-size: 1.75rem;
   }
@@ -123,4 +203,8 @@
   background: var(--light); 
   padding: 4rem 2rem;
   text-align: center;
+}
+
+.dashboard-achievements-section {
+  margin-bottom: 2rem;
 }

@@ -1,61 +1,82 @@
 import React, { useState, useContext, useEffect } from 'react';
 import { AppContext } from '@edx/frontend-platform/react';
 import { useIntl } from '@edx/frontend-platform/i18n';
+import { Alert, Spinner } from '@openedx/paragon';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
   faCheckCircle,
   faAward,
   faTrophy,
 } from '@fortawesome/free-solid-svg-icons';
+import { useLocation } from 'react-router-dom';
 
 import { getConfig } from '@edx/frontend-platform';
 import { getAuthenticatedHttpClient } from '@edx/frontend-platform/auth';
+import { fetchAchievementsAll } from '../custom-api/achievementsApi';
 
 import messages from './custommessages';
 
 import './Achievements.scss';
 import AltBadgeImage from '../assets/image/badgealt.jpeg';
+import PlaceholderImage from '../assets/image/placeholder-image.jpeg';
 
 const Achievements = () => {
   const { formatMessage } = useIntl();
   const { authenticatedUser } = useContext(AppContext);
+  const location = useLocation();
 
   const [summaryCards, setSummaryCards] = useState([]);
   const [earnedBadges, setEarnedBadges] = useState([]);
   const [progressBadges, setProgressBadges] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState(null);
 
 
   const baseUrl = getConfig().LMS_BASE_URL;
   const httpClient = getAuthenticatedHttpClient();
 
+  const mapStats = (stats = []) => stats.map((item) => ({
+    ...item,
+    icon:
+      item.icon === 'faAward'
+        ? faAward
+        : item.icon === 'faTrophy'
+          ? faTrophy
+          : faCheckCircle,
+  }));
+
   useEffect(() => {
-    const fetchSummaryCards = async () => {
+    const initialData = location?.state?.achievementsData;
+
+    if (initialData) {
+      setSummaryCards(mapStats(initialData.stats || []));
+      setEarnedBadges(initialData.earned_badges || []);
+      setProgressBadges(initialData.badges_in_progress || []);
+      setLoading(false);
+      return;
+    }
+
+    const loadAchievements = async () => {
+      setLoading(true);
+      setLoadError(null);
       try {
-        const res = await httpClient.get(`${baseUrl}/api/v1/achievements/all/`);
-
-        if (res.status === 200 && res.data) {
-          const mappedCards = res.data.stats.map((item) => ({
-            ...item,
-            icon:
-              item.icon === 'faAward'
-                ? faAward
-                : item.icon === 'faTrophy'
-                ? faTrophy
-                : faCheckCircle,
-          }));
-
-          setSummaryCards(mappedCards);
-          setEarnedBadges(res.data.earned_badges)
-          setProgressBadges(res.data.badges_in_progress)
-        }
+        const data = await fetchAchievementsAll({ httpClient, baseUrl });
+        setSummaryCards(mapStats(data.stats || []));
+        setEarnedBadges(data.earned_badges || []);
+        setProgressBadges(data.badges_in_progress || []);
       } catch (err) {
         console.error('Failed to fetch summary cards:', err);
         setSummaryCards([]);
+        setEarnedBadges([]);
+        setProgressBadges([]);
+        setLoadError(formatMessage(messages['achievement.error.fetch']));
+      } finally {
+        setLoading(false);
       }
     };
 
-    fetchSummaryCards();
-  }, [baseUrl]);
+    loadAchievements();
+  }, [baseUrl, location?.state?.achievementsData]);
 
   return (
     <div className="achievement-page mt-3">
@@ -65,7 +86,19 @@ const Achievements = () => {
         </h1>
       </div>
 
-      {summaryCards.length > 0 && (
+      {loading && (
+        <div className="container d-flex justify-content-center align-items-center py-5">
+          <Spinner animation="border" variant="primary" />
+        </div>
+      )}
+
+      {!loading && loadError && (
+        <div className="container">
+          <Alert variant="danger">{loadError}</Alert>
+        </div>
+      )}
+
+      {!loading && summaryCards.length > 0 && (
         <div className="container stats">
           <div className="row">
             {summaryCards.map((data) => (
@@ -88,7 +121,7 @@ const Achievements = () => {
         </div>
       )}
 
-      {earnedBadges.length > 0 && (
+      {!loading && earnedBadges.length > 0 && (
         <div className="container">
           <h2 className="mb-4 dashboard-section-title">
             {formatMessage(messages['achievement.badgesEarned'])}
@@ -114,7 +147,7 @@ const Achievements = () => {
         </div>
       )}
 
-      {progressBadges.length > 0 && (
+      {!loading && progressBadges.length > 0 && (
         <div className="container">
           <h2 className="mb-4 dashboard-section-title">
             {formatMessage(messages['achievement.inProgress'])}

@@ -15,6 +15,9 @@ import PlaceholderImage from '../../../assets/image/placeholder-image.jpeg';
 
 const CourseCard = ({ course, progresscard = false , buttonName = "Button", handleButtonClick = null, handleRemove= null, handleCardClick = null}) => {
   const hasDisplayValue = (value) => value !== null && value !== undefined && value !== '' && value !== 0;
+  const showMeta = hasDisplayValue(course.duration) || hasDisplayValue(course.level);
+  const showRating = hasDisplayValue(course.rating) && hasDisplayValue(course.reviews);
+  const showInstructor = hasDisplayValue(course.instructor);
 
   return (
     <div className="course-card grid-mode border rounded" onClick={handleCardClick} style={{ cursor: handleCardClick ? 'pointer' : 'default' }}>
@@ -68,27 +71,29 @@ const CourseCard = ({ course, progresscard = false , buttonName = "Button", hand
             </p>
             }
 
-            <div className="d-flex flex-wrap gap-3 text-muted small mb-3">
-              {hasDisplayValue(course.duration) &&
-              <div className='mr-4'>
-                <FontAwesomeIcon icon={faClock} className="me-1 mr-2" />
-                {course.duration}
+            {showMeta && (
+              <div className="d-flex flex-wrap gap-3 text-muted small mb-3">
+                {hasDisplayValue(course.duration) &&
+                <div className='mr-4'>
+                  <FontAwesomeIcon icon={faClock} className="me-1 mr-2" />
+                  {course.duration}
+                </div>
+                }
+                {hasDisplayValue(course.level) &&
+                <div>
+                  <FontAwesomeIcon icon={faChartLine} className="me-1 mr-2" />
+                  {course.level}
+                </div>
+                }
               </div>
-              }
-              {hasDisplayValue(course.level) &&
-              <div>
-                <FontAwesomeIcon icon={faChartLine} className="me-1 mr-2" />
-                {course.level}
-              </div>
-              }
-            </div>
-            {hasDisplayValue(course.rating) && hasDisplayValue(course.reviews) &&
+            )}
+            {showRating &&
             <div className="d-flex align-items-center mb-4">
               <FontAwesomeIcon icon={faStar} className="me-1 text-warning mr-2" />
               {course.rating} ({course.reviews})
             </div>
             }
-            {hasDisplayValue(course.instructor) &&
+            {showInstructor &&
             <div className="d-flex align-items-center mb-4">
               <FontAwesomeIcon icon={faUser} className="me-2 text-muted mr-2" />
               <span className="small">{course.instructor}</span>
