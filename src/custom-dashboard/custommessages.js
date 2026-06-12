@@ -111,6 +111,36 @@ const messages = defineMessages({
         defaultMessage: 'Failed to load courses',
         description: 'Error message for fetch failures',
     },
+    'dashboard.notifications.ariaLabel': {
+        id: 'dashboard.notifications.ariaLabel',
+        defaultMessage: 'Notifications',
+        description: 'Aria label for notification bell button',
+    },
+    'dashboard.notifications.empty': {
+        id: 'dashboard.notifications.empty',
+        defaultMessage: 'No notifications',
+        description: 'Empty state when user has no notifications',
+    },
+    'dashboard.pagination.inProgress': {
+        id: 'dashboard.pagination.inProgress',
+        defaultMessage: 'In-progress courses pagination',
+        description: 'Aria label for in-progress courses pagination',
+    },
+    'dashboard.pagination.wishlist': {
+        id: 'dashboard.pagination.wishlist',
+        defaultMessage: 'Wishlist courses pagination',
+        description: 'Aria label for wishlist courses pagination',
+    },
+    'dashboard.pagination.completed': {
+        id: 'dashboard.pagination.completed',
+        defaultMessage: 'Completed courses pagination',
+        description: 'Aria label for completed courses pagination',
+    },
+    'dashboard.removeWishlist.ariaLabel': {
+        id: 'dashboard.removeWishlist.ariaLabel',
+        defaultMessage: 'Remove from wishlist',
+        description: 'Aria label for remove from wishlist button on course card',
+    },
 });
 
 export default messages;

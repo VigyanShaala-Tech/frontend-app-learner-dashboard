@@ -432,7 +432,7 @@ const Dashboard = () => {
           {inProgressTotalPages > 1 && (
             <div className="d-flex justify-content-center mt-5">
               <Pagination
-                paginationLabel="In-progress courses pagination"
+                paginationLabel={formatMessage(messages['dashboard.pagination.inProgress'])}
                 pageCount={inProgressTotalPages}
                 currentPage={inProgressCurrentPage}
                 onPageSelect={(page) => handlePageChange(page, 'in-progress')}
@@ -480,7 +480,7 @@ const Dashboard = () => {
           {wishlistTotalPages > 1 && (
             <div className="d-flex justify-content-center mt-5">
               <Pagination
-                paginationLabel="Wishlist courses pagination"
+                paginationLabel={formatMessage(messages['dashboard.pagination.wishlist'])}
                 pageCount={wishlistTotalPages}
                 currentPage={wishlistCurrentPage}
                 onPageSelect={(page) => handlePageChange(page, 'wishlist')}
@@ -524,7 +524,7 @@ const Dashboard = () => {
           {completedTotalPages > 1 && (
             <div className="d-flex justify-content-center mt-5">
               <Pagination
-                paginationLabel="Completed courses pagination"
+                paginationLabel={formatMessage(messages['dashboard.pagination.completed'])}
                 pageCount={completedTotalPages}
                 currentPage={completedCurrentPage}
                 onPageSelect={(page) => handlePageChange(page, 'completed')}
@@ -548,7 +548,7 @@ const Dashboard = () => {
           <button
             type="button"
             className="notification-trigger"
-            aria-label="Notifications"
+            aria-label={formatMessage(messages['dashboard.notifications.ariaLabel'])}
             onClick={handleNotificationClick}
           >
             <FontAwesomeIcon icon={faBell} />
@@ -566,7 +566,9 @@ const Dashboard = () => {
                   </div>
                 ))
               ) : (
-                <div className="notification-empty">No notifications</div>
+                <div className="notification-empty">
+                  {formatMessage(messages['dashboard.notifications.empty'])}
+                </div>
               )}
             </div>
           )}

@@ -1,4 +1,5 @@
 import React from 'react';
+import { useIntl } from '@edx/frontend-platform/i18n';
 import { Button, ProgressBar } from '@openedx/paragon';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
@@ -10,10 +11,12 @@ import {
 } from '@fortawesome/free-solid-svg-icons';
 import { Link } from 'react-router-dom';
 
+import messages from '../../custommessages';
 import './CourseCard.scss';
 import PlaceholderImage from '../../../assets/image/placeholder-image.jpeg';
 
-const CourseCard = ({ course, progresscard = false , buttonName = "Button", handleButtonClick = null, handleRemove= null, handleCardClick = null}) => {
+const CourseCard = ({ course, progresscard = false, buttonName = '', handleButtonClick = null, handleRemove = null, handleCardClick = null }) => {
+  const { formatMessage } = useIntl();
   const hasDisplayValue = (value) => value !== null && value !== undefined && value !== '' && value !== 0;
   const showMeta = hasDisplayValue(course.duration) || hasDisplayValue(course.level);
   const showRating = hasDisplayValue(course.rating) && hasDisplayValue(course.reviews);
@@ -40,7 +43,7 @@ const CourseCard = ({ course, progresscard = false , buttonName = "Button", hand
           <button
             className="position-absolute close-icon bg-light border-0 rounded-circle d-flex align-items-center justify-content-center"
             onClick={handleRemove}
-            aria-label="Remove from wishlist"
+            aria-label={formatMessage(messages['dashboard.removeWishlist.ariaLabel'])}
           >
             <FontAwesomeIcon icon={faTimes} size="sm" />
           </button>
