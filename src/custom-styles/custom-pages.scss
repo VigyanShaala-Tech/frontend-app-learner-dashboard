@@ -5,6 +5,10 @@
 
 .dashboard-page,
 .achievement-page {
+  .container {
+    max-width: 1400px;
+  }
+
   .card {
     border-color: $custom-border-color !important;
   }
