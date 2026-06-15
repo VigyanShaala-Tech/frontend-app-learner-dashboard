@@ -334,10 +334,6 @@ const Dashboard = () => {
     const progressUrl = `${learningBaseUrl}/course/${course.id}/progress`;
     window.location.href = progressUrl;
   }
-  const handleLearning = (course) => {
-    const progressUrl = `${learningBaseUrl}/course/${course.id}`;
-    window.location.href = progressUrl;
-  }
   const handleViewCourse = (course) => {
     const viewCourseUrl = `${publicBaseUrl}courses/${course.id}`;
     window.location.href = viewCourseUrl;
@@ -425,7 +421,7 @@ const Dashboard = () => {
           <div className="row my-courses-grid">
             {inProgressCourses.map((course) => (
               <div key={course.id} className="col-12 col-sm-6 col-lg-3 mb-4">
-                <CourseCard course={course} progresscard={true} buttonName={formatMessage(messages['dashboard.viewProgress'])} handleButtonClick={() => handleViewProgressButton(course)} handleCardClick={() => handleLearning(course)}/>
+                <CourseCard course={course} progresscard={true} buttonName={formatMessage(messages['dashboard.viewProgress'])} handleButtonClick={() => handleViewProgressButton(course)} />
               </div>
             ))}
           </div>
@@ -517,7 +513,7 @@ const Dashboard = () => {
           <div className="row my-courses-grid">
             {completedCourses.map((course) => (
               <div key={course.id} className="col-12 col-sm-6 col-lg-3 mb-4">
-                <CourseCard course={course} progresscard={true} buttonName={formatMessage(messages['dashboard.viewCertificate'])} handleButtonClick={() => handleViewCertificate(course)} handleCardClick={() => handleLearning(course)}/>
+                <CourseCard course={course} progresscard={true} buttonName={formatMessage(messages['dashboard.viewCertificate'])} handleButtonClick={() => handleViewCertificate(course)} />
               </div>
             ))}
           </div>

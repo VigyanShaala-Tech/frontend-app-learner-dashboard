@@ -11,6 +11,10 @@
     box-shadow: var(--shadow-lg);
   }
 
+  .course-image-clickable {
+    cursor: pointer;
+  }
+
   .course-image-wrapper {
     position: relative;
     overflow: hidden;

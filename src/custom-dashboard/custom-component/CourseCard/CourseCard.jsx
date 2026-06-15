@@ -9,22 +9,38 @@ import {
   faUser,
   faTimes,
 } from '@fortawesome/free-solid-svg-icons';
-import { Link } from 'react-router-dom';
 
 import messages from '../../custommessages';
 import './CourseCard.scss';
 import PlaceholderImage from '../../../assets/image/placeholder-image.jpeg';
 
-const CourseCard = ({ course, progresscard = false, buttonName = '', handleButtonClick = null, handleRemove = null, handleCardClick = null }) => {
+const CourseCard = ({ course, progresscard = false, buttonName = '', handleButtonClick = null, handleRemove = null }) => {
   const { formatMessage } = useIntl();
   const hasDisplayValue = (value) => value !== null && value !== undefined && value !== '' && value !== 0;
   const showMeta = hasDisplayValue(course.duration) || hasDisplayValue(course.level);
   const showRating = hasDisplayValue(course.rating) && hasDisplayValue(course.reviews);
   const showInstructor = hasDisplayValue(course.instructor);
 
+  const handlePrimaryAction = (e) => {
+    if (handleButtonClick) {
+      handleButtonClick(e);
+    }
+  };
+
   return (
-    <div className="course-card grid-mode border rounded" onClick={handleCardClick} style={{ cursor: handleCardClick ? 'pointer' : 'default' }}>
-      <div className="course-image-wrapper">
+    <div className="course-card grid-mode border rounded">
+      <div
+        className={`course-image-wrapper${handleButtonClick ? ' course-image-clickable' : ''}`}
+        onClick={handleButtonClick ? handlePrimaryAction : undefined}
+        onKeyDown={handleButtonClick ? (e) => {
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            handlePrimaryAction(e);
+          }
+        } : undefined}
+        role={handleButtonClick ? 'button' : undefined}
+        tabIndex={handleButtonClick ? 0 : undefined}
+      >
         <img
           src={course.image || PlaceholderImage} 
           alt={course.title}
@@ -42,7 +58,10 @@ const CourseCard = ({ course, progresscard = false, buttonName = '', handleButto
         {handleRemove && (
           <button
             className="position-absolute close-icon bg-light border-0 rounded-circle d-flex align-items-center justify-content-center"
-            onClick={handleRemove}
+            onClick={(e) => {
+              e.stopPropagation();
+              handleRemove(e);
+            }}
             aria-label={formatMessage(messages['dashboard.removeWishlist.ariaLabel'])}
           >
             <FontAwesomeIcon icon={faTimes} size="sm" />
@@ -106,7 +125,7 @@ const CourseCard = ({ course, progresscard = false, buttonName = '', handleButto
         )}
         <Button block variant="primary" className='text-white' onClick={(e) => {
           e.stopPropagation();
-          handleButtonClick(e);
+          handlePrimaryAction(e);
         }}>
           {buttonName}
         </Button>
