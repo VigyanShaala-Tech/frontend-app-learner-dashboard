@@ -29,6 +29,9 @@ import { getConfig } from '@edx/frontend-platform';
 import messages from './messages';
 import './App.scss';
 import './custom-styles/index.scss';
+
+const CUSTOM_PAGE_SCROLL_CLASS = 'custom-page-scroll';
+
 export const CustomApp = ({ variant = 'dashboard' }) => {
   const { authenticatedUser } = React.useContext(AppContext);
   const { formatMessage } = useIntl();
@@ -39,6 +42,17 @@ export const CustomApp = ({ variant = 'dashboard' }) => {
   const hasNetworkFailure = isFailed.initialize || isFailed.refreshList;
   const { supportEmail } = reduxHooks.usePlatformSettingsData();
   const loadData = reduxHooks.useLoadData();
+
+  React.useEffect(() => {
+    document.documentElement.classList.add(CUSTOM_PAGE_SCROLL_CLASS);
+    document.body.classList.add(CUSTOM_PAGE_SCROLL_CLASS);
+
+    return () => {
+      document.documentElement.classList.remove(CUSTOM_PAGE_SCROLL_CLASS);
+      document.body.classList.remove(CUSTOM_PAGE_SCROLL_CLASS);
+    };
+  }, []);
+
   React.useEffect(() => {
     if (authenticatedUser?.administrator || getConfig().NODE_ENV === 'development') {
       window.loadEmptyData = () => {
