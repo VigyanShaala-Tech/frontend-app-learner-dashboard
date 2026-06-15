@@ -76,7 +76,7 @@ const CourseCard = ({ course, progresscard = false, buttonName = '', handleButto
         {progresscard ? (
           <>
             <div className="course-card-progress text-end">
-              <div className="text-muted mb-3 text-right">{course.progress}%</div>
+              <div className="text-muted mb-3 text-right course-card-progress-value">{course.progress}%</div>
               <ProgressBar
                 now={course ? course.progress : 0}
                 max={100}
@@ -88,21 +88,21 @@ const CourseCard = ({ course, progresscard = false, buttonName = '', handleButto
         ) : (
           <div className="course-card-content-container-grid">
             {hasDisplayValue(course.description) &&
-            <p className="text-muted course-short-discription-grid small mb-3 flex-grow-1">
+            <p className="text-muted course-short-discription-grid mb-3 flex-grow-1">
               {course.description}
             </p>
             }
 
             {showMeta && (
-              <div className="d-flex flex-wrap gap-3 text-muted small mb-3">
+              <div className="d-flex flex-wrap gap-3 text-muted mb-3 course-card-meta">
                 {hasDisplayValue(course.duration) &&
-                <div className='mr-4'>
+                <div className="course-card-meta-item mr-4">
                   <FontAwesomeIcon icon={faClock} className="me-1 mr-2" />
                   {course.duration}
                 </div>
                 }
                 {hasDisplayValue(course.level) &&
-                <div>
+                <div className="course-card-meta-item">
                   <FontAwesomeIcon icon={faChartLine} className="me-1 mr-2" />
                   {course.level}
                 </div>
@@ -110,15 +110,15 @@ const CourseCard = ({ course, progresscard = false, buttonName = '', handleButto
               </div>
             )}
             {showRating &&
-            <div className="d-flex align-items-center mb-4">
+            <div className="d-flex align-items-center mb-4 course-card-rating">
               <FontAwesomeIcon icon={faStar} className="me-1 text-warning mr-2" />
               {course.rating} ({course.reviews})
             </div>
             }
             {showInstructor &&
-            <div className="d-flex align-items-center mb-4">
+            <div className="d-flex align-items-center mb-4 course-card-instructor">
               <FontAwesomeIcon icon={faUser} className="me-2 text-muted mr-2" />
-              <span className="small">{course.instructor}</span>
+              <span>{course.instructor}</span>
             </div>
             }
           </div>

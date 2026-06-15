@@ -1,5 +1,127 @@
 .dashboard-page {
   min-height: 100vh;
+
+  // Continue Learning cards
+  .dashboard-continue-learning {
+    .course-image-wrapper {
+      height: 8rem;
+    }
+
+    .course-title-grid {
+      font-size: 0.875rem;
+      line-height: 1.25rem;
+    }
+
+    .course-card-progress-value {
+      font-size: 0.875rem;
+      line-height: 1.25rem;
+    }
+
+    .course-card .btn-primary {
+      font-size: 1rem;
+      line-height: 1.5rem;
+    }
+
+    .course-card-progress .progress {
+      height: 0.8rem;
+    }
+
+    .course-card-progress .progress-bar {
+      height: 0.8rem;
+    }
+  }
+
+  // My Courses tabs and cards
+  .dashboard-my-courses {
+    .course-image-wrapper {
+      height: 6rem;
+    }
+
+    .custom-tabs .nav-link {
+      font-size: 0.875rem;
+      line-height: 1.25rem;
+    }
+
+    .course-title-grid {
+      font-size: 0.875rem;
+      line-height: 1.25rem;
+    }
+
+    .course-card-progress-value {
+      font-size: 0.75rem;
+      line-height: 1rem;
+    }
+
+    .course-card .btn-primary {
+      font-size: 0.75rem;
+      line-height: 1rem;
+      padding-top: 0.375rem;
+      padding-bottom: 0.375rem;
+      padding-left: 0.75rem;
+      padding-right: 0.75rem;
+    }
+
+    .course-card-progress .progress {
+      height: 0.375rem;
+    }
+
+    .course-card-progress .progress-bar {
+      height: 0.375rem;
+    }
+  }
+
+  // Achievements preview
+  .dashboard-achievements-section {
+    .badge-img {
+      margin-bottom: 0.5rem;
+    }
+
+    .achievement-badge-title {
+      font-size: 0.75rem;
+      line-height: 1rem;
+      margin-bottom: 0;
+    }
+
+    .btn-link {
+      font-size: 1rem;
+      line-height: 1.5rem;
+    }
+  }
+
+  // Recommended courses
+  .dashboard-recommended-section {
+    .course-image-wrapper {
+      height: 12rem;
+    }
+
+    .course-title-grid {
+      font-size: 1.125rem;
+      line-height: 1.75rem;
+    }
+
+    .course-short-discription-grid {
+      font-size: 0.875rem;
+      line-height: 1.25rem;
+    }
+
+    .course-card-meta,
+    .course-card-meta-item,
+    .course-card-rating,
+    .course-card-instructor {
+      font-size: 1rem;
+      line-height: 1.5rem;
+    }
+
+    .course-card .btn-primary {
+      font-size: 1rem;
+      line-height: 1.5rem;
+    }
+
+    .btn-link {
+      font-size: 1rem;
+      line-height: 1.5rem;
+    }
+  }
 }
 
 .dashboard-title {
@@ -126,6 +248,8 @@
   .nav-link {
     padding: 0.625rem 1.5rem;
     margin: 0 0.25rem;
+    font-size: 0.875rem;
+    line-height: 1.25rem;
   }
 
   .nav-link.active {
@@ -139,8 +263,9 @@
     justify-content: space-around !important;
     border: none;
     .nav-link {
-      padding: 0.5rem ;
-      font-size: 0.95rem;
+      padding: 0.5rem;
+      font-size: 0.875rem;
+      line-height: 1.25rem;
     }
   }
 }
@@ -174,6 +299,7 @@
   height: 40px;
   width: 40px;
   object-fit: contain;
+  margin-bottom: 0;
 }
 
 /* Mobile priorities */
@@ -192,10 +318,6 @@
 
   .card-body {
     padding: 1rem;
-  }
-
-  .btn {
-    font-size: 0.875rem;
   }
 }
 

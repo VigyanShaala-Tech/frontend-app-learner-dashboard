@@ -54,9 +54,9 @@
     flex-direction: column;
   }
   .course-title-grid {
-    font-size: 1.125rem;
+    font-size: 0.875rem;
     font-weight: 600;
-    line-height: 1.75rem;
+    line-height: 1.25rem;
     display: block;
     white-space: nowrap;
     overflow: hidden;
@@ -75,7 +75,6 @@
 }
 .grid-mode {
   .course-image-wrapper {
-    height: 180px;
     flex-shrink: 0;
   }
 }

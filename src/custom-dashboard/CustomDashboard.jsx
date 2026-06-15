@@ -593,7 +593,7 @@ const Dashboard = () => {
 
       {/* Continue Learning */}
       {continueLearningCourses.length > 0 && (
-        <div className="container">
+        <div className="container dashboard-continue-learning">
           <h2 className="mb-4 dashboard-section-title">
             {formatMessage(messages['dashboard.continueLearning'])}
           </h2>
@@ -608,7 +608,7 @@ const Dashboard = () => {
       )}
 
       {/* My Courses */}
-      <div className="container" ref={myCoursesRef}>
+      <div className="container dashboard-my-courses" ref={myCoursesRef}>
         <h2 className="mb-4 dashboard-section-title">
           {formatMessage(messages['dashboard.myCourses'])}
         </h2>
@@ -644,12 +644,12 @@ const Dashboard = () => {
               {achievements.map((ach) => (
                 <div key={ach.id} className="col-6 col-sm-6 col-md-3 col-lg-3 mb-4 text-center">
                   <div className="p-3 bg-white">
-                    <img src={ach.img || AltBadgeImage } alt={ach.title} className="mb-3 badge-img" 
+                    <img src={ach.img || AltBadgeImage } alt={ach.title} className="badge-img"
                       onError={(e) => {
                       e.currentTarget.onerror = null;
                       e.currentTarget.src = PlaceholderImage;}}
                     />
-                    <p className="small">{ach.title}</p>
+                    <p className="small achievement-badge-title">{ach.title}</p>
                   </div>
                 </div>
               ))}
@@ -674,7 +674,7 @@ const Dashboard = () => {
 
       {/* Recommended */}
       {recommendedCourses.length > 0 && (
-        <div className="container mt-4">
+        <div className="container mt-4 dashboard-recommended-section">
           <div className="d-flex justify-content-between mb-3">
             <h2 className="dashboard-section-title">
               {formatMessage(messages['dashboard.recommended'])}
