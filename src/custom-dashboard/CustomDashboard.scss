@@ -304,6 +304,13 @@
 
 /* Mobile priorities */
 @media (max-width: 576px) {
+  .dashboard-page .course-card {
+    width: 100%;
+    max-width: 450px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
   .dashboard-hero-header {
     align-items: flex-start;
   }
