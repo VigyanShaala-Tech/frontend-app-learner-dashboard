@@ -63,8 +63,8 @@
     text-overflow: ellipsis;
   }
   .course-short-discription-grid{
-    display: -webkit-box;
-    -webkit-box-orient: vertical;
+    display: block;
+    white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
   }
