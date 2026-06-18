@@ -10,12 +10,16 @@ import {
   faAward,
   faHeart,
   faChevronRight,
+  faBell,
 } from '@fortawesome/free-solid-svg-icons';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { getConfig } from '@edx/frontend-platform';
 import { getAuthenticatedHttpClient } from '@edx/frontend-platform/auth';
 
 import messages from './custommessages';
+import { fetchRecommendedCourses } from '../custom-api/recommendedCoursesApi';
+import { fetchAchievementsAll } from '../custom-api/achievementsApi';
+import { fetchNotifications, checkoutNotifications } from '../custom-api/notificationsApi';
 
 import './CustomDashboard.scss';
 import CourseCard from './custom-component/CourseCard/CourseCard';
@@ -24,6 +28,7 @@ import AltBadgeImage from '../assets/image/badgealt.jpeg';
 const Dashboard = () => {
   const { formatMessage } = useIntl();
   const { authenticatedUser } = useContext(AppContext);
+  const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('in-progress');
   // const [unenrollCourse, setUnenrollCourse] = useState(null);
 
@@ -51,6 +56,12 @@ const Dashboard = () => {
   const [completedTotalPages, setCompletedTotalPages] = useState(1);
   const [completedLoading, setCompletedLoading] = useState(false);
   const [completedError, setCompletedError] = useState(null);
+  const [achievementsRedirectLoading, setAchievementsRedirectLoading] = useState(false);
+  const [notificationState, setNotificationState] = useState({
+    haveNewNotification: false,
+    notifications: [],
+  });
+  const [showNotifications, setShowNotifications] = useState(false);
 
   const { config } = useContext(AppContext);
   const learningBaseUrl = config.LEARNING_BASE_URL;
@@ -59,9 +70,55 @@ const Dashboard = () => {
   // Refs
   const myCoursesRef = useRef(null);
   const achievementsRef = useRef(null);
+  const notificationRef = useRef(null);
 
   const baseUrl = getConfig().LMS_BASE_URL;
   const httpClient = getAuthenticatedHttpClient();
+
+  const loadNotifications = useCallback(async () => {
+    try {
+      const data = await fetchNotifications({ httpClient, baseUrl });
+      setNotificationState(data);
+    } catch (err) {
+      console.error('Failed to fetch notifications:', err);
+      setNotificationState({
+        haveNewNotification: false,
+        notifications: [],
+      });
+    }
+  }, [baseUrl]);
+
+  useEffect(() => {
+    loadNotifications();
+  }, [loadNotifications]);
+
+  const handleNotificationClick = async () => {
+    setShowNotifications((prev) => !prev);
+
+    if (!notificationState.haveNewNotification) {
+      return;
+    }
+
+    try {
+      const success = await checkoutNotifications({ httpClient, baseUrl });
+      if (success) {
+        await loadNotifications();
+      }
+    } catch (err) {
+      console.error('Failed to checkout notifications:', err);
+    }
+  };
+
+  useEffect(() => {
+    const handleOutsideClick = (event) => {
+      if (notificationRef.current && !notificationRef.current.contains(event.target)) {
+        setShowNotifications(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleOutsideClick);
+    return () => document.removeEventListener('mousedown', handleOutsideClick);
+  }, []);
 
   // Fetch summary cards
   useEffect(() => {
@@ -126,18 +183,16 @@ const Dashboard = () => {
 
   // Fetch recommended
   useEffect(() => {
-    const fetchRecommended = async () => {
+    const loadRecommended = async () => {
       try {
-        const res = await httpClient.get(`${baseUrl}/api/v1/dashboard/recommended-courses/`);
-        if (res.status === 200 && res.data) {
-          setRecommendedCourses(res.data);
-        }
+        const data = await fetchRecommendedCourses({ httpClient, baseUrl });
+        setRecommendedCourses(data);
       } catch (err) {
         console.error('Failed to fetch recommended courses:', err);
         setRecommendedCourses([]);
       }
     };
-    fetchRecommended();
+    loadRecommended();
   }, [baseUrl]);
 
   // Fetch in-progress courses
@@ -279,10 +334,6 @@ const Dashboard = () => {
     const progressUrl = `${learningBaseUrl}/course/${course.id}/progress`;
     window.location.href = progressUrl;
   }
-  const handleLearning = (course) => {
-    const progressUrl = `${learningBaseUrl}/course/${course.id}`;
-    window.location.href = progressUrl;
-  }
   const handleViewCourse = (course) => {
     const viewCourseUrl = `${publicBaseUrl}courses/${course.id}`;
     window.location.href = viewCourseUrl;
@@ -332,6 +383,18 @@ const Dashboard = () => {
     setWishlistCourses(prev => prev.filter(c => c.id !== id));
   };
 
+  const handleViewAllAchievements = async () => {
+    try {
+      setAchievementsRedirectLoading(true);
+      const data = await fetchAchievementsAll({ httpClient, baseUrl });
+      navigate('/achievements', { state: { achievementsData: data } });
+    } catch (err) {
+      console.error('Failed to prefetch achievements:', err);
+    } finally {
+      setAchievementsRedirectLoading(false);
+    }
+  };
+
   const renderTabContent = (tabKey) => {
     if (tabKey === 'in-progress') {
       if (inProgressLoading) {
@@ -347,25 +410,25 @@ const Dashboard = () => {
       if (inProgressCourses.length === 0) {
         return (
           <div className="text-center py-8 no-results rounded">
-            <h4 className="text-muted mb-4">
-              {formatMessage(messages['dashboard.noResults.title'])}
-            </h4>
+            <p className="text-muted mb-0">
+              {formatMessage(messages['dashboard.noInProgress'])}
+            </p>
           </div>
         );
       }
       return (
         <>
-          <div className="row">
+          <div className="row my-courses-grid">
             {inProgressCourses.map((course) => (
-              <div key={course.id} className="col-12 col-sm-6 col-lg-4 mb-4">
-                <CourseCard course={course} progresscard={true} buttonName={formatMessage(messages['dashboard.viewProgress'])} handleButtonClick={() => handleViewProgressButton(course)} handleCardClick={() => handleLearning(course)}/>
+              <div key={course.id} className="col-12 col-sm-6 col-lg-3 mb-4">
+                <CourseCard course={course} progresscard={true} buttonName={formatMessage(messages['dashboard.viewProgress'])} handleButtonClick={() => handleViewProgressButton(course)} />
               </div>
             ))}
           </div>
           {inProgressTotalPages > 1 && (
             <div className="d-flex justify-content-center mt-5">
               <Pagination
-                paginationLabel="In-progress courses pagination"
+                paginationLabel={formatMessage(messages['dashboard.pagination.inProgress'])}
                 pageCount={inProgressTotalPages}
                 currentPage={inProgressCurrentPage}
                 onPageSelect={(page) => handlePageChange(page, 'in-progress')}
@@ -398,9 +461,9 @@ const Dashboard = () => {
       }
       return (
         <>
-          <div className="row">
+          <div className="row my-courses-grid">
             {wishlistCourses.map((course) => (
-              <div key={course.id} className="col-12 col-sm-6 col-lg-4 mb-4">
+              <div key={course.id} className="col-12 col-sm-6 col-lg-3 mb-4">
                 <CourseCard
                   course={course}
                   buttonName={formatMessage(messages['dashboard.viewCourse'])}
@@ -413,7 +476,7 @@ const Dashboard = () => {
           {wishlistTotalPages > 1 && (
             <div className="d-flex justify-content-center mt-5">
               <Pagination
-                paginationLabel="Wishlist courses pagination"
+                paginationLabel={formatMessage(messages['dashboard.pagination.wishlist'])}
                 pageCount={wishlistTotalPages}
                 currentPage={wishlistCurrentPage}
                 onPageSelect={(page) => handlePageChange(page, 'wishlist')}
@@ -439,25 +502,25 @@ const Dashboard = () => {
       if (completedCourses.length === 0) {
         return (
           <div className="text-center py-8 no-results rounded">
-            <h4 className="text-muted mb-4">
-              {formatMessage(messages['dashboard.noResults.title'])}
-            </h4>
+            <p className="text-muted mb-0">
+              {formatMessage(messages['dashboard.noCompleted'])}
+            </p>
           </div>
         );
       }
       return (
         <>
-          <div className="row">
+          <div className="row my-courses-grid">
             {completedCourses.map((course) => (
-              <div key={course.id} className="col-12 col-sm-6 col-lg-4 mb-4">
-                <CourseCard course={course} progresscard={true} buttonName={formatMessage(messages['dashboard.viewCertificate'])} handleButtonClick={() => handleViewCertificate(course)} handleCardClick={() => handleLearning(course)}/>
+              <div key={course.id} className="col-12 col-sm-6 col-lg-3 mb-4">
+                <CourseCard course={course} progresscard={true} buttonName={formatMessage(messages['dashboard.viewCertificate'])} handleButtonClick={() => handleViewCertificate(course)} />
               </div>
             ))}
           </div>
           {completedTotalPages > 1 && (
             <div className="d-flex justify-content-center mt-5">
               <Pagination
-                paginationLabel="Completed courses pagination"
+                paginationLabel={formatMessage(messages['dashboard.pagination.completed'])}
                 pageCount={completedTotalPages}
                 currentPage={completedCurrentPage}
                 onPageSelect={(page) => handlePageChange(page, 'completed')}
@@ -473,10 +536,39 @@ const Dashboard = () => {
   return (
     <div className="dashboard-page mt-3">
       {/* Banner / Hero */}
-      <div className="container">
-        <h1 className="dashboard-title">
+      <div className="container dashboard-hero-header">
+        <h1 className="dashboard-title mb-0">
           {formatMessage(messages['dashboard.welcome'], { name: authenticatedUser.name })}
         </h1>
+        <div className="notification-wrapper" ref={notificationRef}>
+          <button
+            type="button"
+            className="notification-trigger"
+            aria-label={formatMessage(messages['dashboard.notifications.ariaLabel'])}
+            onClick={handleNotificationClick}
+          >
+            <FontAwesomeIcon icon={faBell} />
+            {notificationState.haveNewNotification && (
+              <span className="notification-dot" />
+            )}
+          </button>
+          {showNotifications && (
+            <div className="notification-panel">
+              {notificationState.notifications.length > 0 ? (
+                notificationState.notifications.map((item) => (
+                  <div key={item.id} className="notification-item">
+                    <h6>{item.title}</h6>
+                    <p>{item.description}</p>
+                  </div>
+                ))
+              ) : (
+                <div className="notification-empty">
+                  {formatMessage(messages['dashboard.notifications.empty'])}
+                </div>
+              )}
+            </div>
+          )}
+        </div>
       </div>
 
       {/* Quick Stats */}
@@ -501,7 +593,7 @@ const Dashboard = () => {
 
       {/* Continue Learning */}
       {continueLearningCourses.length > 0 && (
-        <div className="container">
+        <div className="container dashboard-continue-learning">
           <h2 className="mb-4 dashboard-section-title">
             {formatMessage(messages['dashboard.continueLearning'])}
           </h2>
@@ -516,7 +608,7 @@ const Dashboard = () => {
       )}
 
       {/* My Courses */}
-      <div className="container" ref={myCoursesRef}>
+      <div className="container dashboard-my-courses" ref={myCoursesRef}>
         <h2 className="mb-4 dashboard-section-title">
           {formatMessage(messages['dashboard.myCourses'])}
         </h2>
@@ -543,7 +635,7 @@ const Dashboard = () => {
 
       {/* Achievements */}
       {achievements.length > 0 && (
-        <div className="container" ref={achievementsRef}>
+        <div className="container dashboard-achievements-section" ref={achievementsRef}>
           <h2 className="mb-4 dashboard-section-title">
             {formatMessage(messages['dashboard.achievements'])}
           </h2>
@@ -552,22 +644,29 @@ const Dashboard = () => {
               {achievements.map((ach) => (
                 <div key={ach.id} className="col-6 col-sm-6 col-md-3 col-lg-3 mb-4 text-center">
                   <div className="p-3 bg-white">
-                    <img src={ach.img || AltBadgeImage } alt={ach.title} className="mb-3 badge-img" 
+                    <img src={ach.img || AltBadgeImage } alt={ach.title} className="badge-img"
                       onError={(e) => {
                       e.currentTarget.onerror = null;
                       e.currentTarget.src = PlaceholderImage;}}
                     />
-                    <p className="small">{ach.title}</p>
+                    <p className="small achievement-badge-title">{ach.title}</p>
                   </div>
                 </div>
               ))}
             </div>
             <div className="text-right">
-              <Link to={"/achievements"}>
-                <Button variant="link" className="text-primary">
-                  {formatMessage(messages['dashboard.viewAll'])} <FontAwesomeIcon icon={faChevronRight} className="ml-2" />
-                </Button>
-              </Link>
+              <Button
+                variant="link"
+                className="text-primary"
+                onClick={handleViewAllAchievements}
+                disabled={achievementsRedirectLoading}
+              >
+                {achievementsRedirectLoading ? (
+                  <Spinner animation="border" size="sm" className="mr-2" />
+                ) : null}
+                {formatMessage(messages['dashboard.viewAll'])}
+                <FontAwesomeIcon icon={faChevronRight} className="ml-2" />
+              </Button>
             </div>
           </div>
         </div>
@@ -575,7 +674,7 @@ const Dashboard = () => {
 
       {/* Recommended */}
       {recommendedCourses.length > 0 && (
-        <div className="container mt-4">
+        <div className="container mt-4 dashboard-recommended-section">
           <div className="d-flex justify-content-between mb-3">
             <h2 className="dashboard-section-title">
               {formatMessage(messages['dashboard.recommended'])}

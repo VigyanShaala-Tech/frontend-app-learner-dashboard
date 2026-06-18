@@ -1,0 +1,23 @@
+@import 'variables';
+
+// Body-level page scroll (html/body class set by CustomApp)
+html.custom-page-scroll,
+body.custom-page-scroll {
+  scrollbar-width: thin;
+  scrollbar-color: $custom-scrollbar-thumb $custom-scrollbar-track;
+
+  &::-webkit-scrollbar {
+    width: 0.625rem;
+    height: 0.625rem;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: $custom-scrollbar-track;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background-color: $custom-scrollbar-thumb;
+    border-radius: 999px;
+    border: 2px solid $custom-scrollbar-track;
+  }
+}

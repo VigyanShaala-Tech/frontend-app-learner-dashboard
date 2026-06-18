@@ -1,6 +1,5 @@
 import React from 'react';
 import { Helmet } from 'react-helmet';
-import { useState, useEffect } from 'react';
 import { useIntl } from '@edx/frontend-platform/i18n';
 import { logError } from '@edx/frontend-platform/logging';
 import { initializeHotjar } from '@edx/frontend-enterprise-hotjar';
@@ -29,8 +28,9 @@ import CustomLearnerDashboardHeader from 'containers/CustomLearnerDashboardHeade
 import { getConfig } from '@edx/frontend-platform';
 import messages from './messages';
 import './App.scss';
-import { getAuthenticatedHttpClient } from '@edx/frontend-platform/auth';
-import RestrictionPage from 'components/restriction-page/RestrictionPage';
+import './custom-styles/index.scss';
+
+const CUSTOM_PAGE_SCROLL_CLASS = 'custom-page-scroll';
 
 export const CustomApp = ({ variant = 'dashboard' }) => {
   const { authenticatedUser } = React.useContext(AppContext);
@@ -42,8 +42,17 @@ export const CustomApp = ({ variant = 'dashboard' }) => {
   const hasNetworkFailure = isFailed.initialize || isFailed.refreshList;
   const { supportEmail } = reduxHooks.usePlatformSettingsData();
   const loadData = reduxHooks.useLoadData();
-  const [hasProfileCompleted, setHasProfileCompleted] = useState(true);
-  const [canAccessPage, setCanaccessPage] = useState(true);
+
+  React.useEffect(() => {
+    document.documentElement.classList.add(CUSTOM_PAGE_SCROLL_CLASS);
+    document.body.classList.add(CUSTOM_PAGE_SCROLL_CLASS);
+
+    return () => {
+      document.documentElement.classList.remove(CUSTOM_PAGE_SCROLL_CLASS);
+      document.body.classList.remove(CUSTOM_PAGE_SCROLL_CLASS);
+    };
+  }, []);
+
   React.useEffect(() => {
     if (authenticatedUser?.administrator || getConfig().NODE_ENV === 'development') {
       window.loadEmptyData = () => {
@@ -75,28 +84,6 @@ export const CustomApp = ({ variant = 'dashboard' }) => {
       }
     }
   }, [authenticatedUser, loadData]);
-  useEffect(() => {
-    const { LMS_BASE_URL } = getConfig();
-
-    const loadProfileCompletion = async () => {
-      try {
-        const client = getAuthenticatedHttpClient();
-        const { data } = await client.get(`${LMS_BASE_URL}/profile/progress/?role=student`);
-        if (data?.percentage === 100) {
-          setHasProfileCompleted(true);
-        } else {
-          setHasProfileCompleted(false);
-        }
-        setCanaccessPage(data.hidden);
-
-      } catch (err) {
-        console.error('Failed to load profile progress:', err);
-        setHasProfileCompleted(false);
-      }
-    };
-
-    loadProfileCompletion();
-  }, []);
   return (
     <>
       <Helmet>
@@ -107,7 +94,6 @@ export const CustomApp = ({ variant = 'dashboard' }) => {
       </Helmet>
       <div>
         <AppWrapper>
-          {!hasProfileCompleted && !canAccessPage && <RestrictionPage />}
           <CustomLearnerDashboardHeader />
           <main id="main">
             {hasNetworkFailure

@@ -1,4 +1,5 @@
 import React from 'react';
+import { useIntl } from '@edx/frontend-platform/i18n';
 import { Button, ProgressBar } from '@openedx/paragon';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
@@ -8,17 +9,38 @@ import {
   faUser,
   faTimes,
 } from '@fortawesome/free-solid-svg-icons';
-import { Link } from 'react-router-dom';
 
+import messages from '../../custommessages';
 import './CourseCard.scss';
 import PlaceholderImage from '../../../assets/image/placeholder-image.jpeg';
 
-const CourseCard = ({ course, progresscard = false , buttonName = "Button", handleButtonClick = null, handleRemove= null, handleCardClick = null}) => {
+const CourseCard = ({ course, progresscard = false, buttonName = '', handleButtonClick = null, handleRemove = null }) => {
+  const { formatMessage } = useIntl();
   const hasDisplayValue = (value) => value !== null && value !== undefined && value !== '' && value !== 0;
+  const showMeta = hasDisplayValue(course.duration) || hasDisplayValue(course.level);
+  const showRating = hasDisplayValue(course.rating) && hasDisplayValue(course.reviews);
+  const showInstructor = hasDisplayValue(course.instructor);
+
+  const handlePrimaryAction = (e) => {
+    if (handleButtonClick) {
+      handleButtonClick(e);
+    }
+  };
 
   return (
-    <div className="course-card grid-mode border rounded" onClick={handleCardClick} style={{ cursor: handleCardClick ? 'pointer' : 'default' }}>
-      <div className="course-image-wrapper">
+    <div className="course-card grid-mode border rounded">
+      <div
+        className={`course-image-wrapper${handleButtonClick ? ' course-image-clickable' : ''}`}
+        onClick={handleButtonClick ? handlePrimaryAction : undefined}
+        onKeyDown={handleButtonClick ? (e) => {
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            handlePrimaryAction(e);
+          }
+        } : undefined}
+        role={handleButtonClick ? 'button' : undefined}
+        tabIndex={handleButtonClick ? 0 : undefined}
+      >
         <img
           src={course.image || PlaceholderImage} 
           alt={course.title}
@@ -36,8 +58,11 @@ const CourseCard = ({ course, progresscard = false , buttonName = "Button", hand
         {handleRemove && (
           <button
             className="position-absolute close-icon bg-light border-0 rounded-circle d-flex align-items-center justify-content-center"
-            onClick={handleRemove}
-            aria-label="Remove from wishlist"
+            onClick={(e) => {
+              e.stopPropagation();
+              handleRemove(e);
+            }}
+            aria-label={formatMessage(messages['dashboard.removeWishlist.ariaLabel'])}
           >
             <FontAwesomeIcon icon={faTimes} size="sm" />
           </button>
@@ -51,7 +76,7 @@ const CourseCard = ({ course, progresscard = false , buttonName = "Button", hand
         {progresscard ? (
           <>
             <div className="course-card-progress text-end">
-              <div className="text-muted mb-3 text-right">{course.progress}%</div>
+              <div className="text-muted mb-3 text-right course-card-progress-value">{course.progress}%</div>
               <ProgressBar
                 now={course ? course.progress : 0}
                 max={100}
@@ -63,42 +88,44 @@ const CourseCard = ({ course, progresscard = false , buttonName = "Button", hand
         ) : (
           <div className="course-card-content-container-grid">
             {hasDisplayValue(course.description) &&
-            <p className="text-muted course-short-discription-grid small mb-3 flex-grow-1">
+            <p className="text-muted course-short-discription-grid mb-3 flex-grow-1">
               {course.description}
             </p>
             }
 
-            <div className="d-flex flex-wrap gap-3 text-muted small mb-3">
-              {hasDisplayValue(course.duration) &&
-              <div className='mr-4'>
-                <FontAwesomeIcon icon={faClock} className="me-1 mr-2" />
-                {course.duration}
+            {showMeta && (
+              <div className="d-flex flex-wrap gap-3 text-muted mb-3 course-card-meta">
+                {hasDisplayValue(course.duration) &&
+                <div className="course-card-meta-item mr-4">
+                  <FontAwesomeIcon icon={faClock} className="me-1 mr-2" />
+                  {course.duration}
+                </div>
+                }
+                {hasDisplayValue(course.level) &&
+                <div className="course-card-meta-item">
+                  <FontAwesomeIcon icon={faChartLine} className="me-1 mr-2" />
+                  {course.level}
+                </div>
+                }
               </div>
-              }
-              {hasDisplayValue(course.level) &&
-              <div>
-                <FontAwesomeIcon icon={faChartLine} className="me-1 mr-2" />
-                {course.level}
-              </div>
-              }
-            </div>
-            {hasDisplayValue(course.rating) && hasDisplayValue(course.reviews) &&
-            <div className="d-flex align-items-center mb-4">
+            )}
+            {showRating &&
+            <div className="d-flex align-items-center mb-4 course-card-rating">
               <FontAwesomeIcon icon={faStar} className="me-1 text-warning mr-2" />
               {course.rating} ({course.reviews})
             </div>
             }
-            {hasDisplayValue(course.instructor) &&
-            <div className="d-flex align-items-center mb-4">
+            {showInstructor &&
+            <div className="d-flex align-items-center mb-4 course-card-instructor">
               <FontAwesomeIcon icon={faUser} className="me-2 text-muted mr-2" />
-              <span className="small">{course.instructor}</span>
+              <span>{course.instructor}</span>
             </div>
             }
           </div>
         )}
         <Button block variant="primary" className='text-white' onClick={(e) => {
           e.stopPropagation();
-          handleButtonClick(e);
+          handlePrimaryAction(e);
         }}>
           {buttonName}
         </Button>
