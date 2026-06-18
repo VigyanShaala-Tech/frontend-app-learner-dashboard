@@ -1,6 +1,13 @@
 .dashboard-page {
   min-height: 100vh;
 
+  .course-card {
+    width: 100%;
+    max-width: 28.125rem;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
   // Continue Learning cards
   .dashboard-continue-learning {
     .course-image-wrapper {
@@ -304,13 +311,6 @@
 
 /* Mobile priorities */
 @media (max-width: 576px) {
-  .dashboard-page .course-card {
-    width: 100%;
-    max-width: 450px;
-    margin-left: auto;
-    margin-right: auto;
-  }
-
   .dashboard-hero-header {
     align-items: flex-start;
   }
