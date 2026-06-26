@@ -1,0 +1,136 @@
+// Phone input styles — kept at global scope intentionally.
+// ModalDialog uses a React portal (renders at document body), so nested
+// selectors scoped to a parent class won't reach portal content.
+// These class names match the profile MFE's customMobileNumber.scss exactly.
+
+.custom-whatsapp-phone-input.react-international-phone-input-container {
+  align-items: stretch;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  display: flex;
+  min-height: 40px;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  width: 100%;
+}
+
+.custom-whatsapp-phone-input .react-international-phone-country-selector-button {
+  align-items: center;
+  background: #ffffff;
+  border: 0;
+  border-right: 1px solid #e2e8f0;
+  border-radius: 8px 0 0 8px;
+  display: inline-flex;
+  flex-shrink: 0;
+  min-height: 40px;
+  padding-inline: 10px;
+}
+
+.custom-whatsapp-phone-input .react-international-phone-input {
+  border: 0;
+  border-radius: 0 8px 8px 0;
+  box-shadow: none;
+  color: #111827;
+  flex: 1;
+  font-size: 14px;
+  line-height: 20px;
+  min-height: 40px;
+  padding: 9px 12px;
+  width: 100%;
+}
+
+.custom-whatsapp-phone-input:focus-within {
+  border-color: var(--primary, #69ab4a);
+  box-shadow: 0 0 0 2px rgba(105, 171, 74, 0.12);
+}
+
+.custom-whatsapp-phone-input.is-invalid,
+.custom-whatsapp-phone-input.is-invalid:focus-within {
+  border-color: #d23228;
+  box-shadow: none;
+}
+
+// OTP input
+.whatsapp-otp-input {
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  font-size: 14px;
+  min-height: 40px;
+  padding: 9px 12px;
+  width: 100%;
+  outline: none;
+  transition: border-color 0.2s ease;
+
+  &:focus {
+    border-color: var(--primary, #69ab4a);
+    box-shadow: 0 0 0 2px rgba(105, 171, 74, 0.12);
+  }
+}
+
+// Footer button gap — applies inside the modal portal as inline style via className
+.whatsapp-modal-footer-skip {
+  margin-right: 0.75rem;
+}
+.react-international-phone-country-selector {
+  position: relative;
+}
+.react-international-phone-country-selector-button__button-content {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.react-international-phone-flag-emoji {
+  width: var(--react-international-phone-flag-width, 24px);
+  height: var(--react-international-phone-flag-height, 24px);
+  box-sizing: border-box;
+}
+.react-international-phone-country-selector-button__flag-emoji {
+  margin: 0 4px;
+}
+.react-international-phone-country-selector-button__dropdown-arrow {
+  border-top: var(--react-international-phone-country-selector-arrow-size, 4px) solid var(--react-international-phone-country-selector-arrow-color, #777);
+  border-right: var(--react-international-phone-country-selector-arrow-size, 4px) solid transparent;
+  border-left: var(--react-international-phone-country-selector-arrow-size, 4px) solid transparent;
+  transition: all 0.1s ease-out;
+}
+[dir="ltr"] .react-international-phone-country-selector-button__dropdown-arrow {
+  margin-right: 4px;
+}
+.react-international-phone-country-selector-dropdown {
+  position: absolute;
+  z-index: 1;
+  top: var(--react-international-phone-dropdown-top, 44px);
+  display: flex;
+  width: 300px;
+  max-height: 200px;
+  flex-direction: column;
+  padding: 4px 0;
+  margin: 0;
+  background-color: var(--react-international-phone-dropdown-item-background-color, var(--react-international-phone-background-color, white));
+  box-shadow: var(--react-international-phone-dropdown-shadow, 2px 2px 16px rgba(0, 0, 0, 0.25));
+  color: var(--react-international-phone-dropdown-item-text-color, var(--react-international-phone-text-color, #222));
+  list-style: none;
+  overflow-y: scroll;
+  left: var(--react-international-phone-dropdown-left, 0);
+}
+.react-international-phone-country-selector-dropdown__list-item {
+  display: flex;
+  min-height: var(--react-international-phone-dropdown-item-height, 28px);
+  box-sizing: border-box;
+  align-items: center;
+  padding: 2px 8px;
+  margin-right: 8px;
+}
+
+.react-international-phone-flag-emoji {
+  width: var(--react-international-phone-flag-width, 24px);
+  height: var(--react-international-phone-flag-height, 24px);
+  box-sizing: border-box;
+  margin-right: 8px;
+}
+
+.react-international-phone-country-selector-dropdown__list-item-country-name {
+  overflow: hidden;
+  font-size: var(--react-international-phone-dropdown-item-font-size, 14px);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}

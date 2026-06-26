@@ -20,6 +20,8 @@ import messages from './custommessages';
 import { fetchRecommendedCourses } from '../custom-api/recommendedCoursesApi';
 import { fetchAchievementsAll } from '../custom-api/achievementsApi';
 import { fetchNotifications, checkoutNotifications } from '../custom-api/notificationsApi';
+import { checkPhoneStatus } from '../custom-api/phoneStatusApi';
+import WhatsAppVerificationModal from './components/WhatsAppVerificationModal';
 
 import './CustomDashboard.scss';
 import CourseCard from './custom-component/CourseCard/CourseCard';
@@ -63,6 +65,9 @@ const Dashboard = () => {
   });
   const [showNotifications, setShowNotifications] = useState(false);
 
+  // WhatsApp phone verification modal
+  const [showPhoneModal, setShowPhoneModal] = useState(false);
+
   const { config } = useContext(AppContext);
   const learningBaseUrl = config.LEARNING_BASE_URL;
   const publicBaseUrl = config.CATALOG_MICROFRONTEND_URL;
@@ -91,6 +96,19 @@ const Dashboard = () => {
   useEffect(() => {
     loadNotifications();
   }, [loadNotifications]);
+
+  // Check phone number on mount; show verification modal if missing and not skipped in this session
+  useEffect(() => {
+    const SKIP_KEY = 'vs_whatsapp_modal_skipped';
+    if (sessionStorage.getItem(SKIP_KEY)) {
+      return;
+    }
+    checkPhoneStatus({ httpClient, baseUrl }).then(({ hasPhoneNumber }) => {
+      if (!hasPhoneNumber) {
+        setShowPhoneModal(true);
+      }
+    });
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   const handleNotificationClick = async () => {
     setShowNotifications((prev) => !prev);
@@ -382,6 +400,15 @@ const Dashboard = () => {
   const removeFromWishlist = (id) => {
     setWishlistCourses(prev => prev.filter(c => c.id !== id));
   };
+
+  const handlePhoneModalClose = useCallback(() => {
+    sessionStorage.setItem('vs_whatsapp_modal_skipped', '1');
+    setShowPhoneModal(false);
+  }, []);
+
+  const handlePhoneModalSuccess = useCallback(() => {
+    setShowPhoneModal(false);
+  }, []);
 
   const handleViewAllAchievements = async () => {
     try {
@@ -694,6 +721,13 @@ const Dashboard = () => {
           </div>
         </div>
       )}
+
+      {/* WhatsApp number verification modal */}
+      <WhatsAppVerificationModal
+        isOpen={showPhoneModal}
+        onClose={handlePhoneModalClose}
+        onSuccess={handlePhoneModalSuccess}
+      />
 
       {/* {unenrollCourse && (
         <Alert
