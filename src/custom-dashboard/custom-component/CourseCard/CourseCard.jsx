@@ -51,7 +51,7 @@ const CourseCard = ({ course, progresscard = false, buttonName = '', handleButto
           }}
         />
         {hasDisplayValue(course.category) && 
-        <span className="badge position-absolute">
+        <span className="badge position-absolute text-primary">
           {course.category}
         </span>
         }
