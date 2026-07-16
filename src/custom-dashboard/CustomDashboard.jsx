@@ -627,7 +627,7 @@ const Dashboard = () => {
           <div className="row">
             {continueLearningCourses.map((course) => (
               <div key={course.id} className="col-12 col-sm-6 col-lg-4 mb-4">
-                <CourseCard course={course} progresscard={true} buttonName={formatMessage(messages['dashboard.continue'])} handleButtonClick={() => handleContinueLearningButton(course)}/>
+                <CourseCard course={course} progresscard={true} buttonName={formatMessage(course.progress > 0 ? messages['dashboard.continue'] : messages['dashboard.start'])} handleButtonClick={() => handleContinueLearningButton(course)}/>
               </div>
             ))}
           </div>

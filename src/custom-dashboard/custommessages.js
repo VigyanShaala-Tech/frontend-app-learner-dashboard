@@ -46,6 +46,11 @@ const messages = defineMessages({
         defaultMessage: 'Continue',
         description: 'Button to continue a course',
     },
+    'dashboard.start': {
+        id: 'dashboard.start',
+        defaultMessage: 'Start',
+        description: 'Button to start a course that has no progress yet',
+    },
     'dashboard.viewCourse': {
         id: 'dashboard.viewCourse',
         defaultMessage: 'View Course',
