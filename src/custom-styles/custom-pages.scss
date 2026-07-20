@@ -29,8 +29,8 @@
 .dashboard-page,
 .achievement-page {
   > .container {
-    padding-left: 15px;
-    padding-right: 15px;
+    padding-left: 32px;
+    padding-right: 32px;
   }
 }
 
@@ -50,6 +50,85 @@
     > .container {
       padding-left: 1rem;
       padding-right: 1rem;
+    }
+  }
+}
+
+// Dashboard page top spacing
+.dashboard-page {
+  margin-top: 8px;
+
+  .container.stats {
+    [class*='col-'] {
+      margin-bottom: 40px !important;
+    }
+  }
+
+  .dashboard-continue-learning {
+    margin-bottom: 2.5rem;
+  }
+
+  .dashboard-my-courses {
+    .custom-tabs.nav-tabs {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      flex-wrap: nowrap;
+      height: 2.5rem;
+      padding: 0.25rem;
+      margin-bottom: 1.5rem !important;
+      border: none;
+      border-radius: 0.375rem;
+      background-color: #f5f7f4;
+
+      .nav-link {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        white-space: nowrap;
+        border: none !important;
+        border-radius: 0.25rem;
+        padding: 0.375rem 0.75rem;
+        margin: 0;
+        font-size: 0.875rem;
+        font-weight: 500;
+        line-height: 1.25rem;
+        color: #6b7280;
+        background: transparent;
+        transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+
+        &:hover,
+        &:focus {
+          color: #111827;
+          border: none !important;
+        }
+
+        &.active {
+          background-color: #fff !important;
+          color: #111827 !important;
+          box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+        }
+      }
+
+      .pgn__tab_more {
+        display: none;
+      }
+    }
+  }
+}
+
+@media (max-width: 576px) {
+  .dashboard-page {
+    .dashboard-my-courses {
+      .custom-tabs.nav-tabs {
+        height: auto;
+        min-height: 2.5rem;
+        flex-wrap: wrap;
+
+        .nav-link {
+          padding: 0.375rem 0.625rem;
+        }
+      }
     }
   }
 }
