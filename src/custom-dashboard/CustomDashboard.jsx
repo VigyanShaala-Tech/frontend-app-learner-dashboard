@@ -461,9 +461,9 @@ const Dashboard = () => {
       }
       return (
         <>
-          <div className="row my-courses-grid">
+          <div className="row my-courses-grid dashboard-wishlist-tab">
             {wishlistCourses.map((course) => (
-              <div key={course.id} className="col-12 col-sm-6 col-lg-3 mb-4">
+              <div key={course.id} className="col-12 col-sm-6 col-lg-4 mb-4">
                 <CourseCard
                   course={course}
                   buttonName={formatMessage(messages['dashboard.viewCourse'])}

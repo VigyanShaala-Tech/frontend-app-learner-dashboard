@@ -9,7 +9,7 @@
   }
 
   .dashboard-continue-learning,
-  .dashboard-my-courses {
+  .dashboard-my-courses .my-courses-grid:not(.dashboard-wishlist-tab) {
     .course-card {
       &:hover {
         transform: none;
@@ -61,8 +61,8 @@
     }
   }
 
-  // My Courses tabs and cards
-  .dashboard-my-courses {
+  // My Courses tabs and cards (in-progress & completed)
+  .dashboard-my-courses .my-courses-grid:not(.dashboard-wishlist-tab) {
     .course-image-wrapper {
       height: 6rem;
     }
@@ -123,8 +123,9 @@
     }
   }
 
-  // Recommended courses
-  .dashboard-recommended-section {
+  // Recommended courses & wishlist tab
+  .dashboard-recommended-section,
+  .dashboard-my-courses .dashboard-wishlist-tab {
     .course-image-wrapper {
       height: 12rem;
     }
