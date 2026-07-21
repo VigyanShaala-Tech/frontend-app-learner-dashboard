@@ -20,7 +20,7 @@ import messages from './custommessages';
 import { fetchRecommendedCourses } from '../custom-api/recommendedCoursesApi';
 import { fetchAchievementsAll } from '../custom-api/achievementsApi';
 import { fetchNotifications, checkoutNotifications } from '../custom-api/notificationsApi';
-import { checkPhoneStatus } from '../custom-api/phoneStatusApi';
+import { checkPhoneStatus, skipPhonePrompt } from '../custom-api/phoneStatusApi';
 import WhatsAppVerificationModal from './components/WhatsAppVerificationModal';
 
 import './CustomDashboard.scss';
@@ -97,14 +97,16 @@ const Dashboard = () => {
     loadNotifications();
   }, [loadNotifications]);
 
-  // Check phone number on mount; show verification modal if missing and not skipped in this session
+  // Check phone number on mount; show verification modal if missing, not already skipped in
+  // this browser session (SKIP_KEY), and the server-tracked skip limit
+  // (PhoneVerificationPromptStatus.MAX_SKIP_COUNT, 3 logins) hasn't been reached yet.
   useEffect(() => {
     const SKIP_KEY = 'vs_whatsapp_modal_skipped';
     if (sessionStorage.getItem(SKIP_KEY)) {
       return;
     }
-    checkPhoneStatus({ httpClient, baseUrl }).then(({ hasPhoneNumber }) => {
-      if (!hasPhoneNumber) {
+    checkPhoneStatus({ httpClient, baseUrl }).then(({ hasPhoneNumber, shouldPrompt }) => {
+      if (!hasPhoneNumber && shouldPrompt) {
         setShowPhoneModal(true);
       }
     });
@@ -403,8 +405,9 @@ const Dashboard = () => {
 
   const handlePhoneModalClose = useCallback(() => {
     sessionStorage.setItem('vs_whatsapp_modal_skipped', '1');
+    skipPhonePrompt({ httpClient, baseUrl });
     setShowPhoneModal(false);
-  }, []);
+  }, [baseUrl]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const handlePhoneModalSuccess = useCallback(() => {
     setShowPhoneModal(false);
