@@ -488,9 +488,9 @@ const Dashboard = () => {
       }
       return (
         <>
-          <div className="row my-courses-grid">
+          <div className="row my-courses-grid dashboard-wishlist-tab">
             {wishlistCourses.map((course) => (
-              <div key={course.id} className="col-12 col-sm-6 col-lg-3 mb-4">
+              <div key={course.id} className="col-12 col-sm-6 col-lg-4 mb-4">
                 <CourseCard
                   course={course}
                   buttonName={formatMessage(messages['dashboard.viewCourse'])}
@@ -561,7 +561,7 @@ const Dashboard = () => {
   };
 
   return (
-    <div className="dashboard-page mt-3">
+    <div className="dashboard-page">
       {/* Banner / Hero */}
       <div className="container dashboard-hero-header">
         <h1 className="dashboard-title mb-0">
@@ -644,7 +644,7 @@ const Dashboard = () => {
           id="my-courses-tabs"
           activeKey={activeTab}
           onSelect={(key) => setActiveTab(key)}
-          className="mb-4 custom-tabs"
+          className="custom-tabs"
         >
           <Tab eventKey="in-progress" title={formatMessage(messages['dashboard.inProgress'])}>
             {renderTabContent('in-progress')}
