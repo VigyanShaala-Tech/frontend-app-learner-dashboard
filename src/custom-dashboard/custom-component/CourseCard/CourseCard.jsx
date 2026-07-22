@@ -76,12 +76,12 @@ const CourseCard = ({ course, progresscard = false, buttonName = '', handleButto
         {progresscard ? (
           <>
             <div className="course-card-progress text-end">
-              <div className="text-muted mb-3 text-right course-card-progress-value">{course.progress}%</div>
+              <div className="text-muted mb-1 text-right course-card-progress-value">{course.progress}%</div>
               <ProgressBar
                 now={course ? course.progress : 0}
                 max={100}
                 variant="primary"
-                className="flex-grow-1 mb-2 rounded"
+                className="flex-grow-1 mb-3 rounded"
               />
             </div>
           </>

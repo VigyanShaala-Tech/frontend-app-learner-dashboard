@@ -43,12 +43,24 @@
       line-height: 1.5rem;
       transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
 
-      &:hover,
-      &:focus {
+      &:hover {
         background-color: transparent !important;
         border-color: var(--pgn-color-primary-base, #69ab4a) !important;
         color: var(--pgn-color-primary-base, #69ab4a) !important;
         transform: scale(1.02);
+      }
+
+      &:focus,
+      &:focus-visible {
+        outline: none !important;
+        box-shadow: none !important;
+      }
+
+      &:focus::before,
+      &:focus-visible::before {
+        content: none !important;
+        display: none !important;
+        border: 0 !important;
       }
     }
 

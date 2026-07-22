@@ -1,7 +1,6 @@
 @import 'variables';
 
 // Shared borders for custom dashboard and achievements pages.
-// Buttons are not targeted so Paragon/Bootstrap button styles stay unchanged.
 
 .dashboard-page,
 .achievement-page {
@@ -23,6 +22,97 @@
 
   .card .border-bottom {
     border-bottom-color: $custom-border-color !important;
+  }
+
+  // Kill browser + Paragon button focus rings
+  .btn,
+  button,
+  [type='button'],
+  [type='submit'],
+  [type='reset'] {
+    &:focus,
+    &:focus-visible,
+    &.focus {
+      outline: none !important;
+      outline-offset: 0 !important;
+      box-shadow: none !important;
+    }
+
+    &:focus::before,
+    &:focus-visible::before,
+    &.focus::before,
+    &:focus::after,
+    &:focus-visible::after,
+    &.focus::after {
+      content: none !important;
+      display: none !important;
+      border: 0 !important;
+      box-shadow: none !important;
+    }
+  }
+
+  // Match Paragon's high-specificity focus ring selector
+  .btn:not(:disabled, .disabled, .btn-link).focus::before,
+  .btn:not(:disabled, .disabled, .btn-link):focus::before,
+  .btn:not(:disabled, .disabled, .btn-link):focus-visible::before {
+    content: none !important;
+    display: none !important;
+    border: 0 !important;
+  }
+}
+
+// Also via body class + Paragon CSS variables (covers header/footer buttons)
+html.custom-page-scroll,
+body.custom-page-scroll {
+  --pgn-btn-focus-outline-color: transparent;
+  --pgn-size-btn-focus-width: 0px;
+  --pgn-spacing-btn-focus-distance-to-border: 0px;
+  // Brand sets primary button text to dark (#313131); force white on green buttons
+  --pgn-color-btn-text-primary: #fff;
+  --pgn-btn-color: #fff;
+
+  .btn-primary {
+    color: #fff !important;
+  }
+
+  .pgn__modal .btn-primary,
+  .pgn__modal-content .btn-primary,
+  [role='dialog'] .btn-primary {
+    color: #fff !important;
+  }
+
+  .btn,
+  button,
+  [type='button'],
+  [type='submit'],
+  [type='reset'] {
+    &:focus,
+    &:focus-visible,
+    &.focus {
+      outline: none !important;
+      outline-offset: 0 !important;
+      box-shadow: none !important;
+    }
+
+    &:focus::before,
+    &:focus-visible::before,
+    &.focus::before,
+    &:focus::after,
+    &:focus-visible::after,
+    &.focus::after {
+      content: none !important;
+      display: none !important;
+      border: 0 !important;
+      box-shadow: none !important;
+    }
+  }
+
+  .btn:not(:disabled, .disabled, .btn-link).focus::before,
+  .btn:not(:disabled, .disabled, .btn-link):focus::before,
+  .btn:not(:disabled, .disabled, .btn-link):focus-visible::before {
+    content: none !important;
+    display: none !important;
+    border: 0 !important;
   }
 }
 
@@ -69,6 +159,8 @@
   }
 
   .dashboard-my-courses {
+    margin-bottom: 2.5rem;
+
     .custom-tabs.nav-tabs {
       display: inline-flex;
       align-items: center;
@@ -98,18 +190,40 @@
         line-height: 1.25rem;
         color: #6b7280;
         background: transparent;
+        outline: none !important;
+        box-shadow: none !important;
         transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
 
         &:hover,
-        &:focus {
+        &:focus,
+        &:focus-visible,
+        &:active {
           color: #111827;
+          border: none !important;
+          outline: none !important;
+          box-shadow: none !important;
+        }
+
+        // Remove Paragon focus ring (::before border)
+        &:focus::before,
+        &:focus-visible::before,
+        &.active:focus::before,
+        &.active:focus-visible::before {
+          content: none !important;
+          display: none !important;
           border: none !important;
         }
 
-        &.active {
+        &.active,
+        &.active:hover,
+        &.active:focus,
+        &.active:focus-visible,
+        &.active:active {
           background-color: #fff !important;
           color: #111827 !important;
-          box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+          border: none !important;
+          outline: none !important;
+          box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05) !important;
         }
       }
 
