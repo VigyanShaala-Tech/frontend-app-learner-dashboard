@@ -27,6 +27,14 @@ import './CustomDashboard.scss';
 import CourseCard from './custom-component/CourseCard/CourseCard';
 import AltBadgeImage from '../assets/image/badgealt.jpeg';
 
+// Records which login the WhatsApp verification prompt was last skipped/verified for.
+// Keyed by the server's `last_login` timestamp (Django's User.last_login, updated on every
+// successful login) rather than a plain boolean — sessionStorage survives a logout+login that
+// happens in the same browser tab (neither action closes the tab), so a bare "already shown"
+// flag would incorrectly keep suppressing the prompt after the user logs back in. Comparing
+// against last_login lets us tell "still the same login" apart from "a new login happened".
+const WHATSAPP_MODAL_SKIP_KEY = 'vs_whatsapp_modal_skipped_for_login';
+
 const Dashboard = () => {
   const { formatMessage } = useIntl();
   const { authenticatedUser } = useContext(AppContext);
@@ -67,6 +75,9 @@ const Dashboard = () => {
 
   // WhatsApp phone verification modal
   const [showPhoneModal, setShowPhoneModal] = useState(false);
+  // The `last_login` value returned by the most recent phone-status check — recorded so
+  // handlePhoneModalClose can tag the skip with the login it belongs to.
+  const currentLoginRef = useRef('');
 
   const { config } = useContext(AppContext);
   const learningBaseUrl = config.LEARNING_BASE_URL;
@@ -97,18 +108,21 @@ const Dashboard = () => {
     loadNotifications();
   }, [loadNotifications]);
 
-  // Check phone number on mount; show verification modal if missing, not already skipped in
-  // this browser session (SKIP_KEY), and the server-tracked skip limit
-  // (PhoneVerificationPromptStatus.MAX_SKIP_COUNT, 3 logins) hasn't been reached yet.
+  // Check phone number on mount; show verification modal if missing, not already skipped for
+  // this specific login (WHATSAPP_MODAL_SKIP_KEY, keyed by last_login — see comment above), and
+  // the server-tracked skip limit (PhoneVerificationPromptStatus.MAX_SKIP_COUNT, 3 logins)
+  // hasn't been reached yet.
   useEffect(() => {
-    const SKIP_KEY = 'vs_whatsapp_modal_skipped';
-    if (sessionStorage.getItem(SKIP_KEY)) {
-      return;
-    }
-    checkPhoneStatus({ httpClient, baseUrl }).then(({ hasPhoneNumber, shouldPrompt }) => {
-      if (!hasPhoneNumber && shouldPrompt) {
-        setShowPhoneModal(true);
+    checkPhoneStatus({ httpClient, baseUrl }).then(({ hasPhoneNumber, shouldPrompt, lastLogin }) => {
+      currentLoginRef.current = lastLogin;
+      if (hasPhoneNumber || !shouldPrompt) {
+        return;
       }
+      const skippedForLogin = sessionStorage.getItem(WHATSAPP_MODAL_SKIP_KEY);
+      if (lastLogin && skippedForLogin === lastLogin) {
+        return;
+      }
+      setShowPhoneModal(true);
     });
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
@@ -404,7 +418,9 @@ const Dashboard = () => {
   };
 
   const handlePhoneModalClose = useCallback(() => {
-    sessionStorage.setItem('vs_whatsapp_modal_skipped', '1');
+    if (currentLoginRef.current) {
+      sessionStorage.setItem(WHATSAPP_MODAL_SKIP_KEY, currentLoginRef.current);
+    }
     skipPhonePrompt({ httpClient, baseUrl });
     setShowPhoneModal(false);
   }, [baseUrl]); // eslint-disable-line react-hooks/exhaustive-deps

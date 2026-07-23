@@ -8,12 +8,15 @@ export const checkPhoneStatus = async ({ httpClient, baseUrl }) => {
       return {
         hasPhoneNumber: Boolean(response.data.has_phone_number),
         shouldPrompt: Boolean(response.data.should_prompt),
+        lastLogin: response.data.last_login || '',
       };
     }
   } catch (err) {
     // Fail-safe: don't block the user if the API is unavailable
   }
-  return { hasPhoneNumber: true, shouldPrompt: false };
+  return {
+    hasPhoneNumber: true, shouldPrompt: false, lastLogin: '',
+  };
 };
 
 export const savePhoneNumber = async ({ httpClient, baseUrl, phoneNumber }) => {
