@@ -20,12 +20,20 @@ import messages from './custommessages';
 import { fetchRecommendedCourses } from '../custom-api/recommendedCoursesApi';
 import { fetchAchievementsAll } from '../custom-api/achievementsApi';
 import { fetchNotifications, checkoutNotifications } from '../custom-api/notificationsApi';
-import { checkPhoneStatus } from '../custom-api/phoneStatusApi';
+import { checkPhoneStatus, skipPhonePrompt } from '../custom-api/phoneStatusApi';
 import WhatsAppVerificationModal from './components/WhatsAppVerificationModal';
 
 import './CustomDashboard.scss';
 import CourseCard from './custom-component/CourseCard/CourseCard';
 import AltBadgeImage from '../assets/image/badgealt.jpeg';
+
+// Records which login the WhatsApp verification prompt was last skipped/verified for.
+// Keyed by the server's `last_login` timestamp (Django's User.last_login, updated on every
+// successful login) rather than a plain boolean — sessionStorage survives a logout+login that
+// happens in the same browser tab (neither action closes the tab), so a bare "already shown"
+// flag would incorrectly keep suppressing the prompt after the user logs back in. Comparing
+// against last_login lets us tell "still the same login" apart from "a new login happened".
+const WHATSAPP_MODAL_SKIP_KEY = 'vs_whatsapp_modal_skipped_for_login';
 
 const Dashboard = () => {
   const { formatMessage } = useIntl();
@@ -67,6 +75,9 @@ const Dashboard = () => {
 
   // WhatsApp phone verification modal
   const [showPhoneModal, setShowPhoneModal] = useState(false);
+  // The `last_login` value returned by the most recent phone-status check — recorded so
+  // handlePhoneModalClose can tag the skip with the login it belongs to.
+  const currentLoginRef = useRef('');
 
   const { config } = useContext(AppContext);
   const learningBaseUrl = config.LEARNING_BASE_URL;
@@ -97,16 +108,21 @@ const Dashboard = () => {
     loadNotifications();
   }, [loadNotifications]);
 
-  // Check phone number on mount; show verification modal if missing and not skipped in this session
+  // Check phone number on mount; show verification modal if missing, not already skipped for
+  // this specific login (WHATSAPP_MODAL_SKIP_KEY, keyed by last_login — see comment above), and
+  // the server-tracked skip limit (PhoneVerificationPromptStatus.MAX_SKIP_COUNT, 3 logins)
+  // hasn't been reached yet.
   useEffect(() => {
-    const SKIP_KEY = 'vs_whatsapp_modal_skipped';
-    if (sessionStorage.getItem(SKIP_KEY)) {
-      return;
-    }
-    checkPhoneStatus({ httpClient, baseUrl }).then(({ hasPhoneNumber }) => {
-      if (!hasPhoneNumber) {
-        setShowPhoneModal(true);
+    checkPhoneStatus({ httpClient, baseUrl }).then(({ hasPhoneNumber, shouldPrompt, lastLogin }) => {
+      currentLoginRef.current = lastLogin;
+      if (hasPhoneNumber || !shouldPrompt) {
+        return;
       }
+      const skippedForLogin = sessionStorage.getItem(WHATSAPP_MODAL_SKIP_KEY);
+      if (lastLogin && skippedForLogin === lastLogin) {
+        return;
+      }
+      setShowPhoneModal(true);
     });
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
@@ -402,9 +418,12 @@ const Dashboard = () => {
   };
 
   const handlePhoneModalClose = useCallback(() => {
-    sessionStorage.setItem('vs_whatsapp_modal_skipped', '1');
+    if (currentLoginRef.current) {
+      sessionStorage.setItem(WHATSAPP_MODAL_SKIP_KEY, currentLoginRef.current);
+    }
+    skipPhonePrompt({ httpClient, baseUrl });
     setShowPhoneModal(false);
-  }, []);
+  }, [baseUrl]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const handlePhoneModalSuccess = useCallback(() => {
     setShowPhoneModal(false);
@@ -488,9 +507,9 @@ const Dashboard = () => {
       }
       return (
         <>
-          <div className="row my-courses-grid">
+          <div className="row my-courses-grid dashboard-wishlist-tab">
             {wishlistCourses.map((course) => (
-              <div key={course.id} className="col-12 col-sm-6 col-lg-3 mb-4">
+              <div key={course.id} className="col-12 col-sm-6 col-lg-4 mb-4">
                 <CourseCard
                   course={course}
                   buttonName={formatMessage(messages['dashboard.viewCourse'])}
@@ -561,7 +580,7 @@ const Dashboard = () => {
   };
 
   return (
-    <div className="dashboard-page mt-3">
+    <div className="dashboard-page">
       {/* Banner / Hero */}
       <div className="container dashboard-hero-header">
         <h1 className="dashboard-title mb-0">
@@ -627,7 +646,7 @@ const Dashboard = () => {
           <div className="row">
             {continueLearningCourses.map((course) => (
               <div key={course.id} className="col-12 col-sm-6 col-lg-4 mb-4">
-                <CourseCard course={course} progresscard={true} buttonName={formatMessage(messages['dashboard.continue'])} handleButtonClick={() => handleContinueLearningButton(course)}/>
+                <CourseCard course={course} progresscard={true} buttonName={formatMessage(course.progress > 0 ? messages['dashboard.continue'] : messages['dashboard.start'])} handleButtonClick={() => handleContinueLearningButton(course)}/>
               </div>
             ))}
           </div>
@@ -644,7 +663,7 @@ const Dashboard = () => {
           id="my-courses-tabs"
           activeKey={activeTab}
           onSelect={(key) => setActiveTab(key)}
-          className="mb-4 custom-tabs"
+          className="custom-tabs"
         >
           <Tab eventKey="in-progress" title={formatMessage(messages['dashboard.inProgress'])}>
             {renderTabContent('in-progress')}

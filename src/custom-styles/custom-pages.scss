@@ -1,7 +1,6 @@
 @import 'variables';
 
 // Shared borders for custom dashboard and achievements pages.
-// Buttons are not targeted so Paragon/Bootstrap button styles stay unchanged.
 
 .dashboard-page,
 .achievement-page {
@@ -23,5 +22,237 @@
 
   .card .border-bottom {
     border-bottom-color: $custom-border-color !important;
+  }
+
+  // Kill browser + Paragon button focus rings
+  .btn,
+  button,
+  [type='button'],
+  [type='submit'],
+  [type='reset'] {
+    &:focus,
+    &:focus-visible,
+    &.focus {
+      outline: none !important;
+      outline-offset: 0 !important;
+      box-shadow: none !important;
+    }
+
+    &:focus::before,
+    &:focus-visible::before,
+    &.focus::before,
+    &:focus::after,
+    &:focus-visible::after,
+    &.focus::after {
+      content: none !important;
+      display: none !important;
+      border: 0 !important;
+      box-shadow: none !important;
+    }
+  }
+
+  // Match Paragon's high-specificity focus ring selector
+  .btn:not(:disabled, .disabled, .btn-link).focus::before,
+  .btn:not(:disabled, .disabled, .btn-link):focus::before,
+  .btn:not(:disabled, .disabled, .btn-link):focus-visible::before {
+    content: none !important;
+    display: none !important;
+    border: 0 !important;
+  }
+}
+
+// Also via body class + Paragon CSS variables (covers header/footer buttons)
+html.custom-page-scroll,
+body.custom-page-scroll {
+  --pgn-btn-focus-outline-color: transparent;
+  --pgn-size-btn-focus-width: 0px;
+  --pgn-spacing-btn-focus-distance-to-border: 0px;
+  // Brand sets primary button text to dark (#313131); force white on green buttons
+  --pgn-color-btn-text-primary: #fff;
+  --pgn-btn-color: #fff;
+
+  .btn-primary {
+    color: #fff !important;
+  }
+
+  .pgn__modal .btn-primary,
+  .pgn__modal-content .btn-primary,
+  [role='dialog'] .btn-primary {
+    color: #fff !important;
+  }
+
+  .btn,
+  button,
+  [type='button'],
+  [type='submit'],
+  [type='reset'] {
+    &:focus,
+    &:focus-visible,
+    &.focus {
+      outline: none !important;
+      outline-offset: 0 !important;
+      box-shadow: none !important;
+    }
+
+    &:focus::before,
+    &:focus-visible::before,
+    &.focus::before,
+    &:focus::after,
+    &:focus-visible::after,
+    &.focus::after {
+      content: none !important;
+      display: none !important;
+      border: 0 !important;
+      box-shadow: none !important;
+    }
+  }
+
+  .btn:not(:disabled, .disabled, .btn-link).focus::before,
+  .btn:not(:disabled, .disabled, .btn-link):focus::before,
+  .btn:not(:disabled, .disabled, .btn-link):focus-visible::before {
+    content: none !important;
+    display: none !important;
+    border: 0 !important;
+  }
+}
+
+.dashboard-page,
+.achievement-page {
+  > .container {
+    padding-left: 32px;
+    padding-right: 32px;
+  }
+}
+
+@media (max-width: 991px) {
+  .dashboard-page,
+  .achievement-page {
+    > .container {
+      padding-left: 1.5rem;
+      padding-right: 1.5rem;
+    }
+  }
+}
+
+@media (max-width: 576px) {
+  .dashboard-page,
+  .achievement-page {
+    > .container {
+      padding-left: 1rem;
+      padding-right: 1rem;
+    }
+  }
+}
+
+// Dashboard page top spacing
+.dashboard-page {
+  margin-top: 8px;
+
+  .container.stats {
+    [class*='col-'] {
+      margin-bottom: 40px !important;
+    }
+  }
+
+  .dashboard-continue-learning {
+    margin-bottom: 2.5rem;
+  }
+
+  .dashboard-my-courses {
+    margin-bottom: 2.5rem;
+
+    .custom-tabs.nav-tabs {
+      display: inline-flex;
+      align-items: center;
+      justify-content: flex-start;
+      flex-wrap: wrap;
+      width: fit-content;
+      max-width: 100%;
+      height: auto;
+      min-height: 2.5rem;
+      padding: 0.25rem;
+      margin-bottom: 1.5rem !important;
+      border: none;
+      border-radius: 0.375rem;
+      background-color: #f5f7f4;
+
+      .nav-link {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        white-space: nowrap;
+        border: none !important;
+        border-radius: 0.25rem;
+        padding: 0.375rem 0.75rem;
+        margin: 0;
+        font-size: 0.875rem;
+        font-weight: 500;
+        line-height: 1.25rem;
+        color: #6b7280;
+        background: transparent;
+        outline: none !important;
+        box-shadow: none !important;
+        transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+
+        &:hover,
+        &:focus,
+        &:focus-visible,
+        &:active {
+          color: #111827;
+          border: none !important;
+          outline: none !important;
+          box-shadow: none !important;
+        }
+
+        // Remove Paragon focus ring (::before border)
+        &:focus::before,
+        &:focus-visible::before,
+        &.active:focus::before,
+        &.active:focus-visible::before {
+          content: none !important;
+          display: none !important;
+          border: none !important;
+        }
+
+        &.active,
+        &.active:hover,
+        &.active:focus,
+        &.active:focus-visible,
+        &.active:active {
+          background-color: #fff !important;
+          color: #111827 !important;
+          border: none !important;
+          outline: none !important;
+          box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05) !important;
+        }
+      }
+
+      // Keep all tabs visible; disable Paragon overflow "More..." menu
+      .pgn__tab_more {
+        display: none !important;
+      }
+
+      .pgn__tab_invisible {
+        position: static !important;
+        left: auto !important;
+        pointer-events: auto !important;
+        visibility: visible !important;
+      }
+    }
+  }
+}
+
+@media (max-width: 576px) {
+  .dashboard-page {
+    .dashboard-my-courses {
+      .custom-tabs.nav-tabs {
+        width: fit-content;
+        max-width: 100%;
+
+        .nav-link {
+          padding: 0.375rem 0.625rem;
+        }
+      }
+    }
   }
 }
