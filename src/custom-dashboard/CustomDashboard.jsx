@@ -365,8 +365,9 @@ const Dashboard = () => {
     window.location.href = learningUrl;
   }
   const handleViewProgressButton = (course) => {
-    const progressUrl = `${learningBaseUrl}/course/${course.id}/progress`;
-    window.location.href = progressUrl;
+    // The progress page lives in the progress MFE (same rule as learning's buildProgressMfeUrl)
+    const progressBaseUrl = (config.PROGRESS_MFE_BASE_URL || `${window.location.origin}/progress`).replace(/\/+$/, '');
+    window.location.href = `${progressBaseUrl}/${encodeURIComponent(course.id)}`;
   }
   const handleViewCourse = (course) => {
     const viewCourseUrl = `${publicBaseUrl}courses/${course.id}`;
