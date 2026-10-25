@@ -365,8 +365,9 @@ const Dashboard = () => {
     window.location.href = learningUrl;
   }
   const handleViewProgressButton = (course) => {
-    const progressUrl = `${learningBaseUrl}/course/${course.id}/progress`;
-    window.location.href = progressUrl;
+    // The progress page lives in the progress MFE (same rule as learning's buildProgressMfeUrl)
+    const progressBaseUrl = (config.PROGRESS_MFE_BASE_URL || `${window.location.origin}/progress`).replace(/\/+$/, '');
+    window.location.href = `${progressBaseUrl}/${encodeURIComponent(course.id)}`;
   }
   const handleViewCourse = (course) => {
     const viewCourseUrl = `${publicBaseUrl}courses/${course.id}`;
@@ -601,12 +602,22 @@ const Dashboard = () => {
           {showNotifications && (
             <div className="notification-panel">
               {notificationState.notifications.length > 0 ? (
-                notificationState.notifications.map((item) => (
-                  <div key={item.id} className="notification-item">
-                    <h6>{item.title}</h6>
-                    <p>{item.description}</p>
-                  </div>
-                ))
+                // Scrolls after about 7 items (see .notification-list); focusable so it scrolls by keyboard too
+                <div
+                  className="notification-list"
+                  role="region"
+                  // A scrollable region must be focusable for keyboard scrolling (axe: scrollable-region-focusable)
+                  // eslint-disable-next-line jsx-a11y/no-noninteractive-tabindex
+                  tabIndex={0}
+                  aria-label={formatMessage(messages['dashboard.notifications.ariaLabel'])}
+                >
+                  {notificationState.notifications.map((item) => (
+                    <div key={item.id} className="notification-item">
+                      <h6>{item.title}</h6>
+                      <p>{item.description}</p>
+                    </div>
+                  ))}
+                </div>
               ) : (
                 <div className="notification-empty">
                   {formatMessage(messages['dashboard.notifications.empty'])}

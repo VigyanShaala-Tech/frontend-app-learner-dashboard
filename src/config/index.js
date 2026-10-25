@@ -12,6 +12,8 @@ const configuration = {
   SEGMENT_KEY: process.env.SEGMENT_KEY,
   // ACCESS_TOKEN_COOKIE_NAME: process.env.ACCESS_TOKEN_COOKIE_NAME,
   LEARNING_BASE_URL: process.env.LEARNING_BASE_URL,
+  // Usually set through mfe_config; without it the progress MFE is assumed at <current origin>/progress
+  PROGRESS_MFE_BASE_URL: process.env.PROGRESS_MFE_BASE_URL || null,
   SESSION_COOKIE_DOMAIN: process.env.SESSION_COOKIE_DOMAIN || '',
   SUPPORT_URL: process.env.SUPPORT_URL || null,
   ENABLE_NOTICES: process.env.ENABLE_NOTICES || null,

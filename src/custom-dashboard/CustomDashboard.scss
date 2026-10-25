@@ -235,6 +235,40 @@
   overflow: hidden;
 }
 
+// About 7.5 items (each ~4.4rem tall) so the half-visible last one hints that the list scrolls;
+// never taller than the space below the bell on short screens.
+.notification-list {
+  max-height: min(33rem, calc(100vh - 14rem));
+  overflow-y: auto;
+  overscroll-behavior: contain; // scrolling to the end does not scroll the page behind
+  scrollbar-width: thin;
+  scrollbar-color: #cbd5e1 transparent;
+
+  &::-webkit-scrollbar {
+    width: 8px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: transparent;
+    margin: 0.5rem 0;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background-color: #cbd5e1;
+    border: 2px solid #fff; // inset look: thumb sits off the panel edge
+    border-radius: 999px;
+  }
+
+  &:hover::-webkit-scrollbar-thumb {
+    background-color: #94a3b8;
+  }
+
+  &:focus-visible {
+    outline: 2px solid #69AB4A;
+    outline-offset: -2px;
+  }
+}
+
 .notification-item {
   padding: 0.85rem 1rem;
   border-bottom: 1px solid #e2e8f0;
